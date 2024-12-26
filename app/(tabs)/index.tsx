@@ -117,7 +117,7 @@ export default function Screen() {
   };
 
   return (
-    <View className="flex-1 items-center gap-5 p-4 bg-background">
+    <View className="flex-1 items-center gap-4 p-4 bg-background">
       {/* <View className="bg-secondary rounded-lg p-4">
         {isLoading && <Text>Loading...</Text>}
         {isError && <Text className="text-destructive">Error: {data?.message}</Text>}

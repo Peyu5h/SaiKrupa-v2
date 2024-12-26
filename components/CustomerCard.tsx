@@ -45,16 +45,16 @@ const CustomerCard = ({
 
   const handleShowDetails = () => {
     router.push({
-      pathname: '/detailsPage/entry' as const,
+      pathname: '/(detailsPage)/index',
       params: {
         name,
         address,
         stb,
         date,
-        amount,
+        amount: amount.toString(),
         status,
-        debt,
-        advance,
+        debt: debt?.toString(),
+        advance: advance?.toString(),
       },
     });
   };

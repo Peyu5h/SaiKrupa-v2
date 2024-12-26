@@ -14,19 +14,7 @@ import { setAndroidNavigationBar } from '~/lib/android-navigation-bar';
 import { cn, getColor } from '~/lib/utils';
 import { ReactQueryProvider } from '~/components/ReactQueryProvider';
 import { ToastProvider } from '~/components/ui/toast';
-import { Ionicons } from '@expo/vector-icons';
-import { GoHistory } from 'react-icons/go';
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import {
-  HomeIcon,
-  HomeOutlineIcon,
-  AnalysisIcon,
-  HistoryIcon,
-  SettingsIcon,
-  AnalysisOutlineIcon,
-  HistoryOutlineIcon,
-  SettingsOutlineIcon,
-} from '../components/icons';
+
 
 const LIGHT_THEME: Theme = {
   ...DefaultTheme,

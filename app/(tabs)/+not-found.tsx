@@ -9,9 +9,9 @@ export default function NotFoundScreen() {
     <View>
       <Stack.Screen options={{ title: 'Oops!' }} />
       <View>
-        <Text>This screen doesn't exist.</Text>
+        <Text>This detil screen doesn't exist.</Text>
 
-        <Button onPress={() => router.push('/detailsPage/entry')}>
+        <Button onPress={() => router.push('/')}>
           <Text>Go to home screen!</Text>
         </Button>
       </View>

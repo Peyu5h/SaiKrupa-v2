@@ -99,19 +99,18 @@ const DetailsPage = () => {
   const handleDelete = () => {
     setIsDeleteOpen(false);
     setTimeout(() => {
-      router.push('/');
+      router.push('/(tabs)');
       toast({
         title: 'User Deleted',
         description: `Successfully deleted user ${params.name}`,
-        variant: 'destructive',
       });
     }, 100);
   };
 
   return (
     <ScrollView>
-      <View className="flex-1 bg-background pt-6">
-        <View className="p-4 mt-0">
+      <View className="flex-1 bg-background">
+        <View className="p-4">
           <View className="flex-row flex-wrap gap-4 mb-6">
             <View className="flex-1 min-w-[160px] bg-card p-4 rounded-2xl border border-border">
               <Text className="text-muted-foreground text-sm mb-2">STB Number</Text>
@@ -335,7 +334,7 @@ const DetailsPage = () => {
                     color={getColor('destructive')}
                     style={{ marginRight: 8 }}
                   />
-                  <Text className="text-destructive font-medium">Delete User</Text>
+                  <Text className="text-destructive font-medium">Delete Userrrrr</Text>
                 </Pressable>
               </DialogTrigger>
               <DialogContent className="sm:max-w-[425px]">

@@ -9,7 +9,7 @@ export default function NotFoundScreen() {
     <View>
       <Stack.Screen options={{ title: 'Oops!' }} />
       <View>
-        <Text>This screen doesn't exist.</Text>
+        <Text>This root screen doesn't exist.</Text>
 
         <Button onPress={() => router.back()}>
           <Text>Go to home screen!</Text>

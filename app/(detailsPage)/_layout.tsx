@@ -16,16 +16,12 @@ export default function MaterialTopTabsLayout() {
   const router = useRouter();
   const params = useLocalSearchParams();
 
-  const handleBack = () => {
-    router.back();
-  };
-
   return (
     <SafeAreaView className="flex-1 bg-background">
       <View className="flex-row items-center p-4 border-b border-border/50">
         <Pressable
           className="mr-6 bg-background border border-border rounded-full p-3"
-          onPress={handleBack}
+          onPress={() => router.push('/')}
           android_ripple={{
             color: getColor('primary'),
             borderless: true,
@@ -40,7 +36,6 @@ export default function MaterialTopTabsLayout() {
         </View>
       </View>
 
-      {/* Tabs */}
       <MaterialTopTabs
         screenOptions={{
           tabBarActiveTintColor: colors.text,
@@ -73,7 +68,7 @@ export default function MaterialTopTabsLayout() {
         }}
       >
         <MaterialTopTabs.Screen
-          name="entry"
+          name="index"
           options={{
             title: 'Customer Details',
           }}

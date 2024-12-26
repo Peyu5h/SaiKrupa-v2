@@ -19,11 +19,11 @@ const TransactionCard = ({ isLoading }: { isLoading?: boolean }) => {
   return (
     <View>
       <View className="my-2">
-        <View className="bg-secondary/50 p-4 rounded-2xl border border-border flex-row items-center justify-between">
+        <View className="bg-card p-4 rounded-2xl border border-border flex-row items-center justify-between">
           <View className="flex-row items-center space-x-2">
             <View>
               <View className="flex-row items-center">
-                <Text className="font-medium mr-4">23/12/2024 · GPAY</Text>
+                <Text className="font-medium mr-4 text-foreground/70">23/12/2024 · GPAY</Text>
                 <Tooltip delayDuration={150}>
                   <TooltipTrigger className="web:focus:outline-none">
                     <Info size={16} color={getColor('muted-foreground')} />
@@ -40,7 +40,7 @@ const TransactionCard = ({ isLoading }: { isLoading?: boolean }) => {
                 </Tooltip>
               </View>
 
-              <Text className="text-sm text-muted-foreground mt-2">
+              <Text className="text-sm  text-muted-foreground mt-2">
                 {months.map((month) => (
                   <View key={month} className="bg-primary/20 p-1 px-2 rounded-full ">
                     <Text className="text-foreground/50 text-xs">{month}</Text>
@@ -49,7 +49,7 @@ const TransactionCard = ({ isLoading }: { isLoading?: boolean }) => {
               </Text>
             </View>
           </View>
-          <Text className="font-semibold">₹910</Text>
+          <Text className="font-semibold text-foreground/70">₹910</Text>
         </View>
       </View>
     </View>

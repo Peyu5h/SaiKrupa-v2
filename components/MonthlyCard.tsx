@@ -149,11 +149,11 @@ export const MonthlyBreakdown = ({
         }
         return (
           <View key={month} className="my-2">
-            <View className="bg-secondary/50 p-4 rounded-2xl border border-border flex-row items-center justify-between">
+            <View className="bg-card p-4 rounded-2xl border border-border flex-row items-center justify-between">
               <View className="flex-row items-center space-x-2">
                 <View>
                   <View className="flex-row mt-2" style={{ gap: 4 }}>
-                    <Text className="text-foreground/50 text-xl">{month}</Text>
+                    <Text className="text-foreground/60 text-xl">{month}</Text>
                   </View>
                 </View>
               </View>
