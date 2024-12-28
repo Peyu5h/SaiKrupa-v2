@@ -1,4 +1,4 @@
-import { View, ScrollView, useWindowDimensions } from 'react-native';
+import { View, ScrollView, useWindowDimensions, Pressable } from 'react-native';
 import { ThemeToggle } from '~/components/ThemeToggle';
 import { Button } from '~/components/ui/button';
 import { Text } from '~/components/ui/text';
@@ -6,6 +6,8 @@ import { Input } from '~/components/ui/input';
 import { useToast } from '~/components/ui/toast';
 import { useState } from 'react';
 import * as Yup from 'yup';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import {Ionicons} from '@expo/vector-icons';
 
 import { Pencil, Check, X, Plus } from 'lucide-react-native';
 import {
@@ -19,6 +21,7 @@ import {
 } from '~/components/ui/dialog';
 import { Formik, useFormik } from 'formik';
 import { useRouter } from 'expo-router';
+import { cn, getColor } from '~/lib/utils';
 
 const DEFAULT_PLANS = [
   { id: 1, monthlyAmount: 310, profitPerCustomer: 120 },
@@ -37,6 +40,8 @@ export default function SettingsScreen() {
     profitPerCustomer: '',
   });
   const router = useRouter();
+  const [defaultName, setDefaultName] = useState('Vijay');
+  const [isEditingName, setIsEditingName] = useState(false);
 
   const columnWidths = [width * 0.33, width * 0.33, width * 0.33];
 
@@ -108,15 +113,209 @@ export default function SettingsScreen() {
           </Text>
         </View>
 
-        <Dialog open={isCreateUserOpen} onOpenChange={setIsCreateUserOpen}>
-          <DialogTrigger asChild>
-            <Button
-              className="w-full my-4 flex-row items-center justify-center gap-2"
-              onPress={() => setIsCreateUserOpen(true)}
+        <View className="">
+          <Text className="text-sm font-medium mb-2">Default User</Text>
+          <View className='flex-1 flex-row items-center justify-between gap-2'>
+            <Input
+              value={defaultName}
+              className='flex-1'
+              onChangeText={(text) => setDefaultName(text)}
+              editable={isEditingName}
+            />
+            <Button 
+              variant="outline" 
+              size="xl"
+              className={cn(isEditingName && 'bg-green-600')}
+              onPress={() => {
+                if (isEditingName) {
+                  toast({
+                    title: 'Name Updated',
+                    description: 'Successfully updated default name',
+                  });
+                }
+                setIsEditingName(!isEditingName);
+              }}
             >
-              <Text className="text-white">Create New User</Text>
-              <Text className="text-white text-xl">+</Text>
+              {isEditingName ? (
+                <Check size={20} className="text-primary-foreground" />
+              ) : (
+                <Pencil color="gray" size={18} />
+              )}
             </Button>
+          </View>
+        </View>
+
+      
+
+        <Text className="text-lg font-semibold mb-4 mt-8">Change Plans</Text>
+
+        <ScrollView horizontal bounces={false} showsHorizontalScrollIndicator={false}>
+          <View className="border border-border rounded-2xl w-full">
+            <View className="flex-row border-b border-border">
+              <View style={{ width: columnWidths[0] }} className="border-r border-border p-4">
+                <Text className="text-center font-medium">Monthly Amount</Text>
+              </View>
+              <View style={{ width: columnWidths[1] }} className="border-r border-border p-4">
+                <Text className="text-center font-medium">Profit per head</Text>
+              </View>
+              <View style={{ width: columnWidths[2] }} className="p-4">
+                <Text className="text-center font-medium">Edit</Text>
+              </View>
+            </View>
+
+            {plans.map((plan, index) => (
+              <View
+                key={plan.id}
+                className={`flex-row ${index !== plans.length - 1 ? 'border-b border-border' : ''}`}
+              >
+                <View style={{ width: columnWidths[0] }} className="border-r border-border p-4">
+                  {editingPlan === plan.id ? (
+                    <Input
+                      value={editValues.monthlyAmount}
+                      onChangeText={(text) =>
+                        setEditValues((prev) => ({ ...prev, monthlyAmount: text }))
+                      }
+                      keyboardType="numeric"
+                      className="h-8"
+                    />
+                  ) : (
+                    <Text className="text-center">₹{plan.monthlyAmount}</Text>
+                  )}
+                </View>
+                <View style={{ width: columnWidths[1] }} className="border-r border-border p-4">
+                  {editingPlan === plan.id ? (
+                    <Input
+                      value={editValues.profitPerCustomer}
+                      onChangeText={(text) =>
+                        setEditValues((prev) => ({ ...prev, profitPerCustomer: text }))
+                      }
+                      keyboardType="numeric"
+                      className="h-8"
+                    />
+                  ) : (
+                    <Text className="text-center">₹{plan.profitPerCustomer}</Text>
+                  )}
+                </View>
+                <View style={{ width: columnWidths[2] }} className="p-4">
+                  <View className="items-center">
+                    {editingPlan === plan.id ? (
+                      <Button size="xl" variant="outline" onPress={() => handleSave(plan.id)}>
+                        <Check size={20} className="text-primary" />
+                      </Button>
+                    ) : (
+                      <Button size="sm" variant="ghost" onPress={() => handleEdit(plan)}>
+                        <Pencil color="gray" size={16} />
+                      </Button>
+                    )}
+                  </View>
+                </View>
+              </View>
+            ))}
+          </View>
+        </ScrollView>
+
+        <View className="my-4 mt-8 flex-row gap-4">
+          <View className="flex-1">
+            <Dialog open={isUpdateUserOpen} onOpenChange={setIsUpdateUserOpen}>
+              <DialogTrigger asChild>
+                <Pressable
+                  className="flex-1 bg-card p-4 rounded-2xl border border-border flex-row items-center justify-center"
+                  style={{ minWidth: '48%' }}
+                  android_ripple={{
+                    color: getColor('primary'),
+                    borderless: false,
+                    foreground: true,
+                    radius: 92,
+                  }}
+                >
+                  <MaterialCommunityIcons
+                    name="account-edit"
+                    size={20}
+                    color={getColor('primary')}
+                    style={{ marginRight: 8 }}
+                  />
+                  <Text className="text-primary font-medium">Update User</Text>
+                </Pressable>
+              </DialogTrigger>
+              <DialogContent className="min-w-full">
+                <DialogHeader>
+                  <DialogTitle>Update User</DialogTitle>
+                  <DialogDescription>Enter STB ID to update user</DialogDescription>
+                </DialogHeader>
+                <Input placeholder="Enter STB ID" />
+                <View className="flex-row gap-4 mt-4">
+                  <DialogClose asChild style={{ flex: 1 }}>
+                    <Button variant="outline">
+                      <Text>Cancel</Text>
+                    </Button>
+                  </DialogClose>
+                  <DialogClose asChild style={{ flex: 1 }}>
+                    <Button>
+                      <Text>OK</Text>
+                    </Button>
+                  </DialogClose>
+                </View>
+              </DialogContent>
+            </Dialog>
+          </View>
+          <View className="flex-1">
+            <Dialog open={isDeleteUserOpen} onOpenChange={setIsDeleteUserOpen}>
+              <DialogTrigger asChild>
+                <Pressable
+                  className="flex-1 bg-card p-4 rounded-2xl border border-border flex-row items-center justify-center"
+                  style={{ minWidth: '48%' }}
+                  android_ripple={{
+                    color: getColor('destructive'),
+                    borderless: false,
+                    radius: 92,
+                  }}
+                >
+                  <Ionicons
+                    name="trash-outline"
+                    size={20}
+                    color={getColor('destructive')}
+                    style={{ marginRight: 8 }}
+                  />
+                  <Text className="text-destructive font-medium">Delete User</Text>
+                </Pressable>
+              </DialogTrigger>
+              <DialogContent className="min-w-full">
+                <DialogHeader>
+                  <DialogTitle>Delete User</DialogTitle>
+                  <DialogDescription>Enter STB ID to delete user</DialogDescription>
+                </DialogHeader>
+                <Input placeholder="Enter STB ID" />
+                <View className="flex-row gap-4 mt-4">
+                  <DialogClose asChild style={{ flex: 1 }}>
+                    <Button variant="outline">
+                      <Text>Cancel</Text>
+                    </Button>
+                  </DialogClose>
+                  <DialogClose asChild style={{ flex: 1 }}>
+                    <Button variant="destructive">
+                      <Text>OK</Text>
+                    </Button>
+                  </DialogClose>
+                </View>
+              </DialogContent>
+            </Dialog>
+      </View>
+          </View>
+
+          <Dialog open={isCreateUserOpen} onOpenChange={setIsCreateUserOpen}>
+          <DialogTrigger asChild>
+            <Pressable
+              className="w-full bg-primary p-4 rounded-2xl border border-border flex-row items-center justify-center mb-24"
+              android_ripple={{
+                color: getColor('primary'),
+                borderless: false,
+                foreground: true,
+                radius: 92,
+              }}
+            >
+              <Plus size={20} color={getColor('primary-foreground')} style={{ marginRight: 8 }} />
+              <Text className="text-foreground/80 font-medium">Add new user</Text>
+            </Pressable>
           </DialogTrigger>
           <DialogContent className="min-w-full">
             <DialogHeader>
@@ -207,136 +406,7 @@ export default function SettingsScreen() {
             </View>
           </DialogContent>
         </Dialog>
-
-        <Text className="text-lg font-semibold mb-4 mt-8">Change Plans</Text>
-
-        <ScrollView horizontal bounces={false} showsHorizontalScrollIndicator={false}>
-          <View className="border border-border rounded-2xl w-full">
-            <View className="flex-row border-b border-border">
-              <View style={{ width: columnWidths[0] }} className="border-r border-border p-4">
-                <Text className="text-center font-medium">Monthly Amount</Text>
-              </View>
-              <View style={{ width: columnWidths[1] }} className="border-r border-border p-4">
-                <Text className="text-center font-medium">Profit per head</Text>
-              </View>
-              <View style={{ width: columnWidths[2] }} className="p-4">
-                <Text className="text-center font-medium">Edit</Text>
-              </View>
-            </View>
-
-            {plans.map((plan, index) => (
-              <View
-                key={plan.id}
-                className={`flex-row ${index !== plans.length - 1 ? 'border-b border-border' : ''}`}
-              >
-                <View style={{ width: columnWidths[0] }} className="border-r border-border p-4">
-                  {editingPlan === plan.id ? (
-                    <Input
-                      value={editValues.monthlyAmount}
-                      onChangeText={(text) =>
-                        setEditValues((prev) => ({ ...prev, monthlyAmount: text }))
-                      }
-                      keyboardType="numeric"
-                      className="h-8"
-                    />
-                  ) : (
-                    <Text className="text-center">₹{plan.monthlyAmount}</Text>
-                  )}
-                </View>
-                <View style={{ width: columnWidths[1] }} className="border-r border-border p-4">
-                  {editingPlan === plan.id ? (
-                    <Input
-                      value={editValues.profitPerCustomer}
-                      onChangeText={(text) =>
-                        setEditValues((prev) => ({ ...prev, profitPerCustomer: text }))
-                      }
-                      keyboardType="numeric"
-                      className="h-8"
-                    />
-                  ) : (
-                    <Text className="text-center">₹{plan.profitPerCustomer}</Text>
-                  )}
-                </View>
-                <View style={{ width: columnWidths[2] }} className="p-4">
-                  <View className="items-center">
-                    {editingPlan === plan.id ? (
-                      <Button size="sm" variant="ghost" onPress={() => handleSave(plan.id)}>
-                        <Check size={20} className="text-primary" />
-                      </Button>
-                    ) : (
-                      <Button size="sm" variant="ghost" onPress={() => handleEdit(plan)}>
-                        <Pencil color="gray" size={16} />
-                      </Button>
-                    )}
-                  </View>
-                </View>
-              </View>
-            ))}
-          </View>
-        </ScrollView>
-
-        <View className="my-4 flex-row gap-4">
-          <View className="flex-1">
-            <Dialog open={isUpdateUserOpen} onOpenChange={setIsUpdateUserOpen}>
-              <DialogTrigger asChild>
-                <Button className="w-full mb-4 flex-row items-center justify-center gap-2">
-                  <Text className="text-white">Update User</Text>
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="min-w-full">
-                <DialogHeader>
-                  <DialogTitle>Update User</DialogTitle>
-                  <DialogDescription>Enter STB ID to update user</DialogDescription>
-                </DialogHeader>
-                <Input placeholder="Enter STB ID" />
-                <View className="flex-row gap-4 mt-4">
-                  <DialogClose asChild style={{ flex: 1 }}>
-                    <Button variant="outline">
-                      <Text>Cancel</Text>
-                    </Button>
-                  </DialogClose>
-                  <DialogClose asChild style={{ flex: 1 }}>
-                    <Button>
-                      <Text>OK</Text>
-                    </Button>
-                  </DialogClose>
-                </View>
-              </DialogContent>
-            </Dialog>
-          </View>
-          <View className="flex-1">
-            <Dialog open={isDeleteUserOpen} onOpenChange={setIsDeleteUserOpen}>
-              <DialogTrigger asChild>
-                <Button
-                  className="w-full flex-row items-center justify-center gap-2"
-                  variant="destructive"
-                >
-                  <Text className="text-white">Delete User</Text>
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="min-w-full">
-                <DialogHeader>
-                  <DialogTitle>Delete User</DialogTitle>
-                  <DialogDescription>Enter STB ID to delete user</DialogDescription>
-                </DialogHeader>
-                <Input placeholder="Enter STB ID" />
-                <View className="flex-row gap-4 mt-4">
-                  <DialogClose asChild style={{ flex: 1 }}>
-                    <Button variant="outline">
-                      <Text>Cancel</Text>
-                    </Button>
-                  </DialogClose>
-                  <DialogClose asChild style={{ flex: 1 }}>
-                    <Button variant="destructive">
-                      <Text>OK</Text>
-                    </Button>
-                  </DialogClose>
-                </View>
-              </DialogContent>
-            </Dialog>
-          </View>
         </View>
-      </View>
     </ScrollView>
   );
 }

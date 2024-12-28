@@ -6,7 +6,7 @@ import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/dat
 import { Input } from '~/components/ui/input';
 import { Button } from '~/components/ui/button';
 import { ChevronDown } from 'lucide-react-native';
-import { getColor } from '~/lib/utils';
+import { getColor, cn } from '~/lib/utils';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,6 +16,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
 } from '~/components/ui/dropdown-menu';
+import { Muted } from '~/components/ui/typography';
 
 const HistoryScreen = () => {
   const PAYMENT_MODES = ['All', 'UPI', 'Cash'];
@@ -115,20 +116,35 @@ const HistoryScreen = () => {
             className="w-full border border-border text-foreground text-lg rounded-lg "
           />
         </View>
-        <View className="flex-0  w-28">
+        <View className="flex-0 w-28">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="w-full justify-between flex-row">
+              <Button 
+                style={{height:54}}
+                variant="outline" 
+                className="w-full justify-between flex-row"
+              >
                 <Text className="text-foreground">{paymentMode}</Text>
-                <ChevronDown size={18} className="text-muted-foreground" />
+                <ChevronDown size={18} className="text-foreground" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-48">
-              <DropdownMenuLabel>Payment Mode</DropdownMenuLabel>
+            <DropdownMenuContent 
+              align="end"
+              insets={{ left: 12, right: 12 }}
+              className="w-64 native:w-72 bg-background"
+            >
+              <DropdownMenuLabel>Select payment mode</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuGroup>
+              <DropdownMenuGroup className="gap-1">
                 {PAYMENT_MODES.map((mode) => (
-                  <DropdownMenuItem key={mode} onPress={() => setPaymentMode(mode)}>
+                  <DropdownMenuItem 
+                    key={mode} 
+                    onPress={() => setPaymentMode(mode)}
+                    className={cn(
+                      'flex-col items-start gap-1',
+                      paymentMode === mode ? 'bg-secondary/70' : ''
+                    )}
+                  >
                     <Text>{mode}</Text>
                   </DropdownMenuItem>
                 ))}
@@ -154,17 +170,31 @@ const HistoryScreen = () => {
           <View className="flex-1 w-full">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="w-full justify-between flex-row">
+                <Button 
+                  variant="outline" 
+                  className="w-full justify-between flex-row"
+                >
                   <Text className="text-foreground">{selectedMonth}</Text>
-                  <ChevronDown size={18} className="text-muted-foreground" />
+                  <ChevronDown size={18} className="text-foreground" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-48">
+              <DropdownMenuContent 
+                align="end"
+                insets={{ left: 12, right: 12 }}
+                className="w-64 native:w-72 bg-background"
+              >
                 <DropdownMenuLabel>Select Month</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuGroup>
+                <DropdownMenuGroup className="gap-1">
                   {MONTHS.map((month) => (
-                    <DropdownMenuItem key={month} onPress={() => setSelectedMonth(month)}>
+                    <DropdownMenuItem 
+                      key={month} 
+                      onPress={() => setSelectedMonth(month)}
+                      className={cn(
+                        'flex-col items-start gap-1',
+                        selectedMonth === month ? 'bg-secondary/70' : ''
+                      )}
+                    >
                       <Text>{month}</Text>
                     </DropdownMenuItem>
                   ))}

@@ -1,0 +1,84 @@
+"filename", "language", "CSS", "JavaScript", "JSON with Comments", "TypeScript", "JSON", "TypeScript JSX", "comment", "blank", "total"
+"d:\Codes\Saikrupa-V2\SaiKrupa\app.json", "JSON", 0, 0, 0, 0, 45, 0, 0, 1, 46
+"d:\Codes\Saikrupa-V2\SaiKrupa\app\(detailsPage)\_layout.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 101, 1, 7, 109
+"d:\Codes\Saikrupa-V2\SaiKrupa\app\(detailsPage)\form.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 219, 0, 14, 233
+"d:\Codes\Saikrupa-V2\SaiKrupa\app\(detailsPage)\history.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 127, 1, 6, 134
+"d:\Codes\Saikrupa-V2\SaiKrupa\app\(detailsPage)\index.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 380, 2, 26, 408
+"d:\Codes\Saikrupa-V2\SaiKrupa\app\(tabs)\+not-found.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 18, 0, 3, 21
+"d:\Codes\Saikrupa-V2\SaiKrupa\app\(tabs)\_layout.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 306, 7, 15, 328
+"d:\Codes\Saikrupa-V2\SaiKrupa\app\(tabs)\analytics\index.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 202, 3, 21, 226
+"d:\Codes\Saikrupa-V2\SaiKrupa\app\(tabs)\history\index.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 204, 1, 12, 217
+"d:\Codes\Saikrupa-V2\SaiKrupa\app\(tabs)\index.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 279, 5, 16, 300
+"d:\Codes\Saikrupa-V2\SaiKrupa\app\(tabs)\search\index.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 329, 0, 14, 343
+"d:\Codes\Saikrupa-V2\SaiKrupa\app\(tabs)\settings\index.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 308, 11, 24, 343
+"d:\Codes\Saikrupa-V2\SaiKrupa\app\+not-found.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 18, 0, 3, 21
+"d:\Codes\Saikrupa-V2\SaiKrupa\app\_layout.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 80, 1, 10, 91
+"d:\Codes\Saikrupa-V2\SaiKrupa\app\index.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 4, 0, 1, 5
+"d:\Codes\Saikrupa-V2\SaiKrupa\babel.config.js", "JavaScript", 0, 9, 0, 0, 0, 0, 0, 1, 10
+"d:\Codes\Saikrupa-V2\SaiKrupa\backend\.eslintrc.js", "JavaScript", 0, 23, 0, 0, 0, 0, 0, 0, 23
+"d:\Codes\Saikrupa-V2\SaiKrupa\backend\nodemon.json", "JSON", 0, 0, 0, 0, 6, 0, 0, 0, 6
+"d:\Codes\Saikrupa-V2\SaiKrupa\backend\package-lock.json", "JSON", 0, 0, 0, 0, 3954, 0, 0, 1, 3955
+"d:\Codes\Saikrupa-V2\SaiKrupa\backend\package.json", "JSON", 0, 0, 0, 0, 52, 0, 0, 1, 53
+"d:\Codes\Saikrupa-V2\SaiKrupa\backend\src\controllers\bill.controller.ts", "TypeScript", 0, 0, 0, 266, 0, 0, 4, 30, 300
+"d:\Codes\Saikrupa-V2\SaiKrupa\backend\src\controllers\customer.controller.ts", "TypeScript", 0, 0, 0, 216, 0, 0, 0, 22, 238
+"d:\Codes\Saikrupa-V2\SaiKrupa\backend\src\index.ts", "TypeScript", 0, 0, 0, 20, 0, 0, 0, 7, 27
+"d:\Codes\Saikrupa-V2\SaiKrupa\backend\src\routes\bill.route.ts", "TypeScript", 0, 0, 0, 16, 0, 0, 0, 5, 21
+"d:\Codes\Saikrupa-V2\SaiKrupa\backend\src\routes\customer.route.ts", "TypeScript", 0, 0, 0, 16, 0, 0, 0, 4, 20
+"d:\Codes\Saikrupa-V2\SaiKrupa\backend\src\routes\index.ts", "TypeScript", 0, 0, 0, 7, 0, 0, 0, 4, 11
+"d:\Codes\Saikrupa-V2\SaiKrupa\backend\src\utils\prisma.ts", "TypeScript", 0, 0, 0, 6, 0, 0, 0, 4, 10
+"d:\Codes\Saikrupa-V2\SaiKrupa\backend\src\utils\types.ts", "TypeScript", 0, 0, 0, 33, 0, 0, 0, 4, 37
+"d:\Codes\Saikrupa-V2\SaiKrupa\backend\src\utils\utils.ts", "TypeScript", 0, 0, 0, 81, 0, 0, 4, 14, 99
+"d:\Codes\Saikrupa-V2\SaiKrupa\backend\tsconfig.json", "JSON with Comments", 0, 0, 13, 0, 0, 0, 1, 0, 14
+"d:\Codes\Saikrupa-V2\SaiKrupa\components.json", "JSON", 0, 0, 0, 0, 6, 0, 0, 0, 6
+"d:\Codes\Saikrupa-V2\SaiKrupa\components\AllTransactionsCard.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 84, 0, 7, 91
+"d:\Codes\Saikrupa-V2\SaiKrupa\components\CustomerCard.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 152, 0, 10, 162
+"d:\Codes\Saikrupa-V2\SaiKrupa\components\DropDown.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 76, 0, 3, 79
+"d:\Codes\Saikrupa-V2\SaiKrupa\components\ErrorBoundary.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 38, 0, 9, 47
+"d:\Codes\Saikrupa-V2\SaiKrupa\components\MonthlyCard.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 129, 29, 12, 170
+"d:\Codes\Saikrupa-V2\SaiKrupa\components\ReactQueryProvider.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 32, 0, 5, 37
+"d:\Codes\Saikrupa-V2\SaiKrupa\components\ThemeToggle.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 36, 0, 1, 37
+"d:\Codes\Saikrupa-V2\SaiKrupa\components\TransactionCard.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 48, 7, 5, 60
+"d:\Codes\Saikrupa-V2\SaiKrupa\components\forms\UpdateForm.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 1, 1
+"d:\Codes\Saikrupa-V2\SaiKrupa\components\icons\index.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 79, 0, 8, 87
+"d:\Codes\Saikrupa-V2\SaiKrupa\components\ui\avatar.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 40, 0, 6, 46
+"d:\Codes\Saikrupa-V2\SaiKrupa\components\ui\button.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 83, 0, 6, 89
+"d:\Codes\Saikrupa-V2\SaiKrupa\components\ui\card.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 50, 0, 8, 58
+"d:\Codes\Saikrupa-V2\SaiKrupa\components\ui\dialog.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 132, 0, 16, 148
+"d:\Codes\Saikrupa-V2\SaiKrupa\components\ui\dropdown-menu.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 237, 0, 17, 254
+"d:\Codes\Saikrupa-V2\SaiKrupa\components\ui\hover-card.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 41, 0, 5, 46
+"d:\Codes\Saikrupa-V2\SaiKrupa\components\ui\input.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 21, 0, 4, 25
+"d:\Codes\Saikrupa-V2\SaiKrupa\components\ui\label.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 25, 0, 3, 28
+"d:\Codes\Saikrupa-V2\SaiKrupa\components\ui\progress.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 55, 0, 7, 62
+"d:\Codes\Saikrupa-V2\SaiKrupa\components\ui\radio-group.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 33, 0, 4, 37
+"d:\Codes\Saikrupa-V2\SaiKrupa\components\ui\select.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 155, 6, 14, 175
+"d:\Codes\Saikrupa-V2\SaiKrupa\components\ui\skeleton.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 33, 0, 7, 40
+"d:\Codes\Saikrupa-V2\SaiKrupa\components\ui\switch.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 89, 0, 7, 96
+"d:\Codes\Saikrupa-V2\SaiKrupa\components\ui\table.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 84, 0, 9, 93
+"d:\Codes\Saikrupa-V2\SaiKrupa\components\ui\text.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 21, 0, 4, 25
+"d:\Codes\Saikrupa-V2\SaiKrupa\components\ui\toast.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 156, 0, 17, 173
+"d:\Codes\Saikrupa-V2\SaiKrupa\components\ui\tooltip.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 35, 0, 5, 40
+"d:\Codes\Saikrupa-V2\SaiKrupa\components\ui\typography.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 180, 2, 23, 205
+"d:\Codes\Saikrupa-V2\SaiKrupa\eas.json", "JSON", 0, 0, 0, 0, 21, 0, 0, 2, 23
+"d:\Codes\Saikrupa-V2\SaiKrupa\global.css", "CSS", 50, 0, 0, 0, 0, 0, 1, 24, 75
+"d:\Codes\Saikrupa-V2\SaiKrupa\index.js", "JavaScript", 0, 7, 0, 0, 0, 0, 2, 4, 13
+"d:\Codes\Saikrupa-V2\SaiKrupa\lib\android-navigation-bar.ts", "TypeScript", 0, 0, 0, 10, 0, 0, 0, 2, 12
+"d:\Codes\Saikrupa-V2\SaiKrupa\lib\api.ts", "TypeScript", 0, 0, 0, 52, 0, 0, 0, 14, 66
+"d:\Codes\Saikrupa-V2\SaiKrupa\lib\constants.ts", "TypeScript", 0, 0, 0, 19, 0, 0, 0, 2, 21
+"d:\Codes\Saikrupa-V2\SaiKrupa\lib\icons\Check.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 4, 0, 0, 4
+"d:\Codes\Saikrupa-V2\SaiKrupa\lib\icons\ChevronDown.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 4, 0, 0, 4
+"d:\Codes\Saikrupa-V2\SaiKrupa\lib\icons\ChevronRight.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 4, 0, 0, 4
+"d:\Codes\Saikrupa-V2\SaiKrupa\lib\icons\ChevronUp.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 4, 0, 0, 4
+"d:\Codes\Saikrupa-V2\SaiKrupa\lib\icons\Info.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 4, 0, 0, 4
+"d:\Codes\Saikrupa-V2\SaiKrupa\lib\icons\MoonStar.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 4, 0, 0, 4
+"d:\Codes\Saikrupa-V2\SaiKrupa\lib\icons\Sun.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 4, 0, 0, 4
+"d:\Codes\Saikrupa-V2\SaiKrupa\lib\icons\X.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 4, 0, 0, 4
+"d:\Codes\Saikrupa-V2\SaiKrupa\lib\icons\iconWithClassName.ts", "TypeScript", 0, 0, 0, 13, 0, 0, 0, 2, 15
+"d:\Codes\Saikrupa-V2\SaiKrupa\lib\useColorScheme.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 10, 0, 2, 12
+"d:\Codes\Saikrupa-V2\SaiKrupa\lib\utils.ts", "TypeScript", 0, 0, 0, 38, 0, 0, 0, 7, 45
+"d:\Codes\Saikrupa-V2\SaiKrupa\metro.config.js", "JavaScript", 0, 4, 0, 0, 0, 0, 0, 3, 7
+"d:\Codes\Saikrupa-V2\SaiKrupa\nativewind-env.d.ts", "TypeScript", 0, 0, 0, 0, 0, 0, 1, 1, 2
+"d:\Codes\Saikrupa-V2\SaiKrupa\package-lock.json", "JSON", 0, 0, 0, 0, 15015, 0, 0, 1, 15016
+"d:\Codes\Saikrupa-V2\SaiKrupa\package.json", "JSON", 0, 0, 0, 0, 98, 0, 0, 1, 99
+"d:\Codes\Saikrupa-V2\SaiKrupa\tailwind.config.js", "JavaScript", 0, 63, 0, 0, 0, 0, 1, 2, 66
+"d:\Codes\Saikrupa-V2\SaiKrupa\tsconfig.json", "JSON with Comments", 0, 0, 19, 0, 0, 0, 0, 0, 19
+"Total", "-", 50, 106, 32, 793, 19197, 4761, 90, 560, 25589

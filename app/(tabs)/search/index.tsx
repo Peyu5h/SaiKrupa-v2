@@ -38,7 +38,6 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import api from '~/lib/api';
 import { useToast } from '~/components/ui/toast';
 import { Input } from '~/components/ui/input';
-import { RoleDropdownSelect } from '~/components/DropDown';
 import { cn, getColor } from '~/lib/utils';
 import { Muted } from '~/components/ui/typography';
 import { ChevronDown } from 'lucide-react-native';
@@ -160,9 +159,9 @@ export default function SearchScreen() {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
+                style={{height:54}}
                 variant="outline"
-                size={Platform.OS === 'web' ? 'sm' : 'default'}
-                className="flex-row items-center justify-between gap-2 native:pr-3"
+                className="flex-row items-center justify-between "
               >
                 <Text>{customerType}</Text>
                 <ChevronDown size={18} className="text-foreground" />
@@ -234,17 +233,31 @@ export default function SearchScreen() {
         <View className="w-1/2 flex-1">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="w-full justify-between flex-row">
-                <Text>{MONTHS[selectedMonth]}</Text>
-                <ChevronDown className="text-muted-foreground" size={18} />
+              <Button 
+                variant="outline" 
+                className="w-full justify-between flex-row"
+              >
+                <Text className="text-foreground">{MONTHS[selectedMonth]}</Text>
+                <ChevronDown size={18} className="text-foreground" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-48">
+            <DropdownMenuContent 
+              align="end"
+              insets={{ left: 12, right: 12 }}
+              className="w-64 native:w-72 bg-background"
+            >
               <DropdownMenuLabel>Select Month</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuGroup>
+              <DropdownMenuGroup className="gap-1">
                 {MONTHS.map((month, index) => (
-                  <DropdownMenuItem key={month} onPress={() => setSelectedMonth(index)}>
+                  <DropdownMenuItem 
+                    key={month} 
+                    onPress={() => setSelectedMonth(index)}
+                    className={cn(
+                      'flex-col items-start gap-1',
+                      selectedMonth === index ? 'bg-secondary/70' : ''
+                    )}
+                  >
                     <Text>{month}</Text>
                   </DropdownMenuItem>
                 ))}
@@ -256,17 +269,31 @@ export default function SearchScreen() {
         <View className="w-1/2 flex-1">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="w-full justify-between flex-row">
-                <Text>{selectedYear}</Text>
-                <ChevronDown className="text-muted-foreground" size={18} />
+              <Button 
+                variant="outline" 
+                className="w-full justify-between flex-row"
+              >
+                <Text className="text-foreground">{selectedYear}</Text>
+                <ChevronDown size={18} className="text-foreground" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-48">
+            <DropdownMenuContent 
+              align="end"
+              insets={{ left: 12, right: 12 }}
+              className="w-64 native:w-72 bg-background"
+            >
               <DropdownMenuLabel>Select Year</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuGroup>
+              <DropdownMenuGroup className="gap-1">
                 {Array.from({ length: 10 }, (_, index) => (
-                  <DropdownMenuItem key={index} onPress={() => setSelectedYear(2024 - index)}>
+                  <DropdownMenuItem 
+                    key={index} 
+                    onPress={() => setSelectedYear(2024 - index)}
+                    className={cn(
+                      'flex-col items-start gap-1',
+                      selectedYear === (2024 - index) ? 'bg-secondary/70' : ''
+                    )}
+                  >
                     <Text>{2024 - index}</Text>
                   </DropdownMenuItem>
                 ))}

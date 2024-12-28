@@ -1,0 +1,136 @@
+Date : 2024-12-26 22:00:31
+Directory : d:\Codes\Saikrupa-V2\SaiKrupa
+Total : 82 files,  24939 codes, 90 comments, 560 blanks, all 25589 lines
+
+Languages
++--------------------+------------+------------+------------+------------+------------+
+| language           | files      | code       | comment    | blank      | total      |
++--------------------+------------+------------+------------+------------+------------+
+| JSON               |          8 |     19,197 |          0 |          7 |     19,204 |
+| TypeScript JSX     |         51 |      4,761 |         76 |        397 |      5,234 |
+| TypeScript         |         15 |        793 |          9 |        122 |        924 |
+| JavaScript         |          5 |        106 |          3 |         10 |        119 |
+| CSS                |          1 |         50 |          1 |         24 |         75 |
+| JSON with Comments |          2 |         32 |          1 |          0 |         33 |
++--------------------+------------+------------+------------+------------+------------+
+
+Directories
++------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                         | files      | code       | comment    | blank      | total      |
++------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                            |         82 |     24,939 |         90 |        560 |     25,589 |
+| . (Files)                                                                    |         12 |     15,337 |          5 |         40 |     15,382 |
+| app                                                                          |         14 |      2,575 |         32 |        172 |      2,779 |
+| app (Files)                                                                  |          3 |        102 |          1 |         14 |        117 |
+| app\(detailsPage)                                                            |          4 |        827 |          4 |         53 |        884 |
+| app\(tabs)                                                                   |          7 |      1,646 |         27 |        105 |      1,778 |
+| app\(tabs) (Files)                                                           |          3 |        603 |         12 |         34 |        649 |
+| app\(tabs)\analytics                                                         |          1 |        202 |          3 |         21 |        226 |
+| app\(tabs)\history                                                           |          1 |        204 |          1 |         12 |        217 |
+| app\(tabs)\search                                                            |          1 |        329 |          0 |         14 |        343 |
+| app\(tabs)\settings                                                          |          1 |        308 |         11 |         24 |        343 |
+| backend                                                                      |         14 |      4,709 |          9 |         96 |      4,814 |
+| backend (Files)                                                              |          5 |      4,048 |          1 |          2 |      4,051 |
+| backend\src                                                                  |          9 |        661 |          8 |         94 |        763 |
+| backend\src (Files)                                                          |          1 |         20 |          0 |          7 |         27 |
+| backend\src\controllers                                                      |          2 |        482 |          4 |         52 |        538 |
+| backend\src\routes                                                           |          3 |         39 |          0 |         13 |         52 |
+| backend\src\utils                                                            |          3 |        120 |          4 |         22 |        146 |
+| components                                                                   |         28 |      2,144 |         44 |        223 |      2,411 |
+| components (Files)                                                           |          8 |        595 |         36 |         52 |        683 |
+| components\forms                                                             |          1 |          0 |          0 |          1 |          1 |
+| components\icons                                                             |          1 |         79 |          0 |          8 |         87 |
+| components\ui                                                                |         18 |      1,470 |          8 |        162 |      1,640 |
+| lib                                                                          |         14 |        174 |          0 |         29 |        203 |
+| lib (Files)                                                                  |          5 |        129 |          0 |         27 |        156 |
+| lib\icons                                                                    |          9 |         45 |          0 |          2 |         47 |
++------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++------------------------------------------------------------------------------+--------------------+------------+------------+------------+------------+
+| filename                                                                     | language           | code       | comment    | blank      | total      |
++------------------------------------------------------------------------------+--------------------+------------+------------+------------+------------+
+| d:\Codes\Saikrupa-V2\SaiKrupa\app.json                                       | JSON               |         45 |          0 |          1 |         46 |
+| d:\Codes\Saikrupa-V2\SaiKrupa\app\(detailsPage)\_layout.tsx                  | TypeScript JSX     |        101 |          1 |          7 |        109 |
+| d:\Codes\Saikrupa-V2\SaiKrupa\app\(detailsPage)\form.tsx                     | TypeScript JSX     |        219 |          0 |         14 |        233 |
+| d:\Codes\Saikrupa-V2\SaiKrupa\app\(detailsPage)\history.tsx                  | TypeScript JSX     |        127 |          1 |          6 |        134 |
+| d:\Codes\Saikrupa-V2\SaiKrupa\app\(detailsPage)\index.tsx                    | TypeScript JSX     |        380 |          2 |         26 |        408 |
+| d:\Codes\Saikrupa-V2\SaiKrupa\app\(tabs)\+not-found.tsx                      | TypeScript JSX     |         18 |          0 |          3 |         21 |
+| d:\Codes\Saikrupa-V2\SaiKrupa\app\(tabs)\_layout.tsx                         | TypeScript JSX     |        306 |          7 |         15 |        328 |
+| d:\Codes\Saikrupa-V2\SaiKrupa\app\(tabs)\analytics\index.tsx                 | TypeScript JSX     |        202 |          3 |         21 |        226 |
+| d:\Codes\Saikrupa-V2\SaiKrupa\app\(tabs)\history\index.tsx                   | TypeScript JSX     |        204 |          1 |         12 |        217 |
+| d:\Codes\Saikrupa-V2\SaiKrupa\app\(tabs)\index.tsx                           | TypeScript JSX     |        279 |          5 |         16 |        300 |
+| d:\Codes\Saikrupa-V2\SaiKrupa\app\(tabs)\search\index.tsx                    | TypeScript JSX     |        329 |          0 |         14 |        343 |
+| d:\Codes\Saikrupa-V2\SaiKrupa\app\(tabs)\settings\index.tsx                  | TypeScript JSX     |        308 |         11 |         24 |        343 |
+| d:\Codes\Saikrupa-V2\SaiKrupa\app\+not-found.tsx                             | TypeScript JSX     |         18 |          0 |          3 |         21 |
+| d:\Codes\Saikrupa-V2\SaiKrupa\app\_layout.tsx                                | TypeScript JSX     |         80 |          1 |         10 |         91 |
+| d:\Codes\Saikrupa-V2\SaiKrupa\app\index.tsx                                  | TypeScript JSX     |          4 |          0 |          1 |          5 |
+| d:\Codes\Saikrupa-V2\SaiKrupa\babel.config.js                                | JavaScript         |          9 |          0 |          1 |         10 |
+| d:\Codes\Saikrupa-V2\SaiKrupa\backend\.eslintrc.js                           | JavaScript         |         23 |          0 |          0 |         23 |
+| d:\Codes\Saikrupa-V2\SaiKrupa\backend\nodemon.json                           | JSON               |          6 |          0 |          0 |          6 |
+| d:\Codes\Saikrupa-V2\SaiKrupa\backend\package-lock.json                      | JSON               |      3,954 |          0 |          1 |      3,955 |
+| d:\Codes\Saikrupa-V2\SaiKrupa\backend\package.json                           | JSON               |         52 |          0 |          1 |         53 |
+| d:\Codes\Saikrupa-V2\SaiKrupa\backend\src\controllers\bill.controller.ts     | TypeScript         |        266 |          4 |         30 |        300 |
+| d:\Codes\Saikrupa-V2\SaiKrupa\backend\src\controllers\customer.controller.ts | TypeScript         |        216 |          0 |         22 |        238 |
+| d:\Codes\Saikrupa-V2\SaiKrupa\backend\src\index.ts                           | TypeScript         |         20 |          0 |          7 |         27 |
+| d:\Codes\Saikrupa-V2\SaiKrupa\backend\src\routes\bill.route.ts               | TypeScript         |         16 |          0 |          5 |         21 |
+| d:\Codes\Saikrupa-V2\SaiKrupa\backend\src\routes\customer.route.ts           | TypeScript         |         16 |          0 |          4 |         20 |
+| d:\Codes\Saikrupa-V2\SaiKrupa\backend\src\routes\index.ts                    | TypeScript         |          7 |          0 |          4 |         11 |
+| d:\Codes\Saikrupa-V2\SaiKrupa\backend\src\utils\prisma.ts                    | TypeScript         |          6 |          0 |          4 |         10 |
+| d:\Codes\Saikrupa-V2\SaiKrupa\backend\src\utils\types.ts                     | TypeScript         |         33 |          0 |          4 |         37 |
+| d:\Codes\Saikrupa-V2\SaiKrupa\backend\src\utils\utils.ts                     | TypeScript         |         81 |          4 |         14 |         99 |
+| d:\Codes\Saikrupa-V2\SaiKrupa\backend\tsconfig.json                          | JSON with Comments |         13 |          1 |          0 |         14 |
+| d:\Codes\Saikrupa-V2\SaiKrupa\components.json                                | JSON               |          6 |          0 |          0 |          6 |
+| d:\Codes\Saikrupa-V2\SaiKrupa\components\AllTransactionsCard.tsx             | TypeScript JSX     |         84 |          0 |          7 |         91 |
+| d:\Codes\Saikrupa-V2\SaiKrupa\components\CustomerCard.tsx                    | TypeScript JSX     |        152 |          0 |         10 |        162 |
+| d:\Codes\Saikrupa-V2\SaiKrupa\components\DropDown.tsx                        | TypeScript JSX     |         76 |          0 |          3 |         79 |
+| d:\Codes\Saikrupa-V2\SaiKrupa\components\ErrorBoundary.tsx                   | TypeScript JSX     |         38 |          0 |          9 |         47 |
+| d:\Codes\Saikrupa-V2\SaiKrupa\components\MonthlyCard.tsx                     | TypeScript JSX     |        129 |         29 |         12 |        170 |
+| d:\Codes\Saikrupa-V2\SaiKrupa\components\ReactQueryProvider.tsx              | TypeScript JSX     |         32 |          0 |          5 |         37 |
+| d:\Codes\Saikrupa-V2\SaiKrupa\components\ThemeToggle.tsx                     | TypeScript JSX     |         36 |          0 |          1 |         37 |
+| d:\Codes\Saikrupa-V2\SaiKrupa\components\TransactionCard.tsx                 | TypeScript JSX     |         48 |          7 |          5 |         60 |
+| d:\Codes\Saikrupa-V2\SaiKrupa\components\forms\UpdateForm.tsx                | TypeScript JSX     |          0 |          0 |          1 |          1 |
+| d:\Codes\Saikrupa-V2\SaiKrupa\components\icons\index.tsx                     | TypeScript JSX     |         79 |          0 |          8 |         87 |
+| d:\Codes\Saikrupa-V2\SaiKrupa\components\ui\avatar.tsx                       | TypeScript JSX     |         40 |          0 |          6 |         46 |
+| d:\Codes\Saikrupa-V2\SaiKrupa\components\ui\button.tsx                       | TypeScript JSX     |         83 |          0 |          6 |         89 |
+| d:\Codes\Saikrupa-V2\SaiKrupa\components\ui\card.tsx                         | TypeScript JSX     |         50 |          0 |          8 |         58 |
+| d:\Codes\Saikrupa-V2\SaiKrupa\components\ui\dialog.tsx                       | TypeScript JSX     |        132 |          0 |         16 |        148 |
+| d:\Codes\Saikrupa-V2\SaiKrupa\components\ui\dropdown-menu.tsx                | TypeScript JSX     |        237 |          0 |         17 |        254 |
+| d:\Codes\Saikrupa-V2\SaiKrupa\components\ui\hover-card.tsx                   | TypeScript JSX     |         41 |          0 |          5 |         46 |
+| d:\Codes\Saikrupa-V2\SaiKrupa\components\ui\input.tsx                        | TypeScript JSX     |         21 |          0 |          4 |         25 |
+| d:\Codes\Saikrupa-V2\SaiKrupa\components\ui\label.tsx                        | TypeScript JSX     |         25 |          0 |          3 |         28 |
+| d:\Codes\Saikrupa-V2\SaiKrupa\components\ui\progress.tsx                     | TypeScript JSX     |         55 |          0 |          7 |         62 |
+| d:\Codes\Saikrupa-V2\SaiKrupa\components\ui\radio-group.tsx                  | TypeScript JSX     |         33 |          0 |          4 |         37 |
+| d:\Codes\Saikrupa-V2\SaiKrupa\components\ui\select.tsx                       | TypeScript JSX     |        155 |          6 |         14 |        175 |
+| d:\Codes\Saikrupa-V2\SaiKrupa\components\ui\skeleton.tsx                     | TypeScript JSX     |         33 |          0 |          7 |         40 |
+| d:\Codes\Saikrupa-V2\SaiKrupa\components\ui\switch.tsx                       | TypeScript JSX     |         89 |          0 |          7 |         96 |
+| d:\Codes\Saikrupa-V2\SaiKrupa\components\ui\table.tsx                        | TypeScript JSX     |         84 |          0 |          9 |         93 |
+| d:\Codes\Saikrupa-V2\SaiKrupa\components\ui\text.tsx                         | TypeScript JSX     |         21 |          0 |          4 |         25 |
+| d:\Codes\Saikrupa-V2\SaiKrupa\components\ui\toast.tsx                        | TypeScript JSX     |        156 |          0 |         17 |        173 |
+| d:\Codes\Saikrupa-V2\SaiKrupa\components\ui\tooltip.tsx                      | TypeScript JSX     |         35 |          0 |          5 |         40 |
+| d:\Codes\Saikrupa-V2\SaiKrupa\components\ui\typography.tsx                   | TypeScript JSX     |        180 |          2 |         23 |        205 |
+| d:\Codes\Saikrupa-V2\SaiKrupa\eas.json                                       | JSON               |         21 |          0 |          2 |         23 |
+| d:\Codes\Saikrupa-V2\SaiKrupa\global.css                                     | CSS                |         50 |          1 |         24 |         75 |
+| d:\Codes\Saikrupa-V2\SaiKrupa\index.js                                       | JavaScript         |          7 |          2 |          4 |         13 |
+| d:\Codes\Saikrupa-V2\SaiKrupa\lib\android-navigation-bar.ts                  | TypeScript         |         10 |          0 |          2 |         12 |
+| d:\Codes\Saikrupa-V2\SaiKrupa\lib\api.ts                                     | TypeScript         |         52 |          0 |         14 |         66 |
+| d:\Codes\Saikrupa-V2\SaiKrupa\lib\constants.ts                               | TypeScript         |         19 |          0 |          2 |         21 |
+| d:\Codes\Saikrupa-V2\SaiKrupa\lib\icons\Check.tsx                            | TypeScript JSX     |          4 |          0 |          0 |          4 |
+| d:\Codes\Saikrupa-V2\SaiKrupa\lib\icons\ChevronDown.tsx                      | TypeScript JSX     |          4 |          0 |          0 |          4 |
+| d:\Codes\Saikrupa-V2\SaiKrupa\lib\icons\ChevronRight.tsx                     | TypeScript JSX     |          4 |          0 |          0 |          4 |
+| d:\Codes\Saikrupa-V2\SaiKrupa\lib\icons\ChevronUp.tsx                        | TypeScript JSX     |          4 |          0 |          0 |          4 |
+| d:\Codes\Saikrupa-V2\SaiKrupa\lib\icons\Info.tsx                             | TypeScript JSX     |          4 |          0 |          0 |          4 |
+| d:\Codes\Saikrupa-V2\SaiKrupa\lib\icons\MoonStar.tsx                         | TypeScript JSX     |          4 |          0 |          0 |          4 |
+| d:\Codes\Saikrupa-V2\SaiKrupa\lib\icons\Sun.tsx                              | TypeScript JSX     |          4 |          0 |          0 |          4 |
+| d:\Codes\Saikrupa-V2\SaiKrupa\lib\icons\X.tsx                                | TypeScript JSX     |          4 |          0 |          0 |          4 |
+| d:\Codes\Saikrupa-V2\SaiKrupa\lib\icons\iconWithClassName.ts                 | TypeScript         |         13 |          0 |          2 |         15 |
+| d:\Codes\Saikrupa-V2\SaiKrupa\lib\useColorScheme.tsx                         | TypeScript JSX     |         10 |          0 |          2 |         12 |
+| d:\Codes\Saikrupa-V2\SaiKrupa\lib\utils.ts                                   | TypeScript         |         38 |          0 |          7 |         45 |
+| d:\Codes\Saikrupa-V2\SaiKrupa\metro.config.js                                | JavaScript         |          4 |          0 |          3 |          7 |
+| d:\Codes\Saikrupa-V2\SaiKrupa\nativewind-env.d.ts                            | TypeScript         |          0 |          1 |          1 |          2 |
+| d:\Codes\Saikrupa-V2\SaiKrupa\package-lock.json                              | JSON               |     15,015 |          0 |          1 |     15,016 |
+| d:\Codes\Saikrupa-V2\SaiKrupa\package.json                                   | JSON               |         98 |          0 |          1 |         99 |
+| d:\Codes\Saikrupa-V2\SaiKrupa\tailwind.config.js                             | JavaScript         |         63 |          1 |          2 |         66 |
+| d:\Codes\Saikrupa-V2\SaiKrupa\tsconfig.json                                  | JSON with Comments |         19 |          0 |          0 |         19 |
+| Total                                                                        |                    |     24,939 |         90 |        560 |     25,589 |
++------------------------------------------------------------------------------+--------------------+------------+------------+------------+------------+

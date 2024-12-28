@@ -118,7 +118,7 @@ const DetailsPage = () => {
                 <Text className="text-lg text-foreground/80 font-semibold">{params.stb}</Text>
                 <Pressable
                   android_ripple={{
-                    color: getColor('primary'),
+                    color: getColor('muted-foreground'),
                     radius: 100,
                     foreground: true,
                     borderless: false,
@@ -141,7 +141,7 @@ const DetailsPage = () => {
                 <Text className="text-lg text-foreground/80 font-semibold">{params.stb}</Text>
                 <Pressable
                   android_ripple={{
-                    color: getColor('primary'),
+                    color: getColor('muted-foreground'),
                     radius: 100,
                     foreground: true,
                     borderless: false,
@@ -334,7 +334,7 @@ const DetailsPage = () => {
                     color={getColor('destructive')}
                     style={{ marginRight: 8 }}
                   />
-                  <Text className="text-destructive font-medium">Delete Userrrrr</Text>
+                  <Text className="text-destructive font-medium">Delete User</Text>
                 </Pressable>
               </DialogTrigger>
               <DialogContent className="sm:max-w-[425px]">

@@ -1,5 +1,5 @@
 import { Pressable, View } from 'react-native';
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { getColor } from '~/lib/utils';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Text } from './ui/text';
@@ -43,21 +43,12 @@ const CustomerCard = ({
     }, 3000);
   };
 
-  const handleShowDetails = () => {
+  const handlePress = useCallback(() => {
     router.push({
-      pathname: '/(detailsPage)/index',
-      params: {
-        name,
-        address,
-        stb,
-        date,
-        amount: amount.toString(),
-        status,
-        debt: debt?.toString(),
-        advance: advance?.toString(),
-      },
+      pathname: '/(detailsPage)',
+      params: { name, address, stb }
     });
-  };
+  }, [name, address, stb]);
 
   const getStatusDisplay = () => {
     switch (status) {
@@ -152,14 +143,15 @@ const CustomerCard = ({
         <View className="justify-between items-end">
           {getStatusDisplay()}
           <Pressable
-            onPress={handleShowDetails}
+            onPress={handlePress}
             android_ripple={{
-              color: getColor('border'),
+              color: getColor('muted-foreground'),
+              radius: 75,
               borderless: false,
             }}
-            className="border border-foreground/10 p-[20px] px-8 rounded-xl"
+            className="border bg-card border-foreground/20 p-[20px] px-8 rounded-xl"
           >
-            <Text className="text-muted-foreground">Show details</Text>
+            <Text className="text-foreground/30">Show details</Text>
           </Pressable>
         </View>
       </View>

@@ -1,5 +1,13 @@
+import type {
+  MaterialTopTabNavigationEventMap,
+  MaterialTopTabNavigationOptions,
+} from '@react-navigation/material-top-tabs';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import { useTheme } from '@react-navigation/native';
+import {
+  useTheme,
+  type ParamListBase,
+  type TabNavigationState,
+} from '@react-navigation/native';
 import { withLayoutContext } from 'expo-router';
 import { View, Pressable } from 'react-native';
 import { Text } from '~/components/ui/text';
@@ -7,9 +15,16 @@ import { ChevronLeft } from 'lucide-react-native';
 import { getColor } from '~/lib/utils';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { PortalHost } from '@rn-primitives/portal';
 
 const { Navigator } = createMaterialTopTabNavigator();
-const MaterialTopTabs = withLayoutContext(Navigator);
+
+const MaterialTopTabs = withLayoutContext<
+  MaterialTopTabNavigationOptions,
+  typeof Navigator,
+  TabNavigationState<ParamListBase>,
+  MaterialTopTabNavigationEventMap
+>(Navigator);
 
 export default function MaterialTopTabsLayout() {
   const { colors } = useTheme();
@@ -17,11 +32,11 @@ export default function MaterialTopTabsLayout() {
   const params = useLocalSearchParams();
 
   return (
-    <SafeAreaView className="flex-1 bg-background">
+    <View className="flex-1 mt-10 bg-background">
       <View className="flex-row items-center p-4 border-b border-border/50">
         <Pressable
           className="mr-6 bg-background border border-border rounded-full p-3"
-          onPress={() => router.push('/')}
+          onPress={() => router.back()}
           android_ripple={{
             color: getColor('primary'),
             borderless: true,
@@ -37,34 +52,34 @@ export default function MaterialTopTabsLayout() {
       </View>
 
       <MaterialTopTabs
+        initialRouteName="index"
         screenOptions={{
-          tabBarActiveTintColor: colors.text,
-          tabBarInactiveTintColor: 'grey',
+          tabBarActiveTintColor: getColor('primary'),
+          tabBarInactiveTintColor: getColor('muted-foreground'),
           tabBarLabelStyle: {
             fontSize: 14,
             textTransform: 'capitalize',
-            fontWeight: 'bold',
+            fontWeight: '600',
           },
           tabBarIndicatorStyle: {
-            backgroundColor: colors.text,
-            height: 2,
+            backgroundColor: getColor('primary'),
+            height: 3,
           },
-          tabBarScrollEnabled: false,
           tabBarStyle: {
+            backgroundColor: getColor('background'),
             elevation: 0,
             shadowOpacity: 0,
-            backgroundColor: 'transparent',
-          },
-          tabBarContentContainerStyle: {
-            alignItems: 'center',
-            backgroundColor: getColor('background'),
-          },
-          tabBarItemStyle: {
-            width: undefined,
-            paddingHorizontal: 0,
             borderBottomWidth: 1,
             borderBottomColor: getColor('border'),
           },
+          tabBarItemStyle: {
+            width: 'auto',
+            paddingHorizontal: 16,
+          },
+          tabBarScrollEnabled: false,
+          swipeEnabled: true,
+          animationEnabled: true,
+          lazy: false,
         }}
       >
         <MaterialTopTabs.Screen
@@ -86,6 +101,8 @@ export default function MaterialTopTabsLayout() {
           }}
         />
       </MaterialTopTabs>
-    </SafeAreaView>
+      {/* <PortalHost /> */}
+
+    </View>
   );
 }

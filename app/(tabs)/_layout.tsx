@@ -85,7 +85,7 @@ export default function RootLayout() {
   }
 
   return (
-    <SafeAreaView className={cn('flex-1', isDarkColorScheme ? 'dark' : '')}>
+    <SafeAreaView className={cn('flex-1 bg-background', isDarkColorScheme ? 'dark' : '')}>
       <Tabs
         initialRouteName="index"
         screenOptions={{
@@ -147,7 +147,7 @@ export default function RootLayout() {
         />
 
         <Tabs.Screen
-          name="detailsPage"
+          name="(detailsPage)"
           options={{
             href: null,
             tabBarStyle: { display: 'none' },

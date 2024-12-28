@@ -138,8 +138,9 @@ export default function Screen() {
             <DropdownMenuTrigger asChild>
               <Button
                 variant="outline"
+                style={{height:54}}
                 size={Platform.OS === 'web' ? 'sm' : 'default'}
-                className="flex-row items-center justify-between gap-2 native:pr-3"
+                className="flex-row items-center justify-between"
               >
                 <Text>{customerType}</Text>
                 <ChevronDown size={18} className="text-foreground" />

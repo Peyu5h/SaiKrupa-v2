@@ -51,7 +51,7 @@ export default function Form() {
 
   return (
     <ScrollView className="flex-1 p-4 bg-background">
-      <View className="flex-row items-center justify-between mb-6 p-4 bg-card/50 rounded-2xl border border-border">
+      <View className="flex-row items-center  justify-between mb-6 p-4 bg-card/50 rounded-2xl border border-border">
         <View>
           <Text className="font-medium text-lg">Service Paused</Text>
           <Text className="text-muted-foreground text-sm">Turn on if service was paused</Text>
@@ -67,23 +67,27 @@ export default function Form() {
 
         <View className={cn('flex-row gap-4', isMultiMonth ? 'justify-between' : 'justify-center')}>
           <View className={cn('flex-1', isMultiMonth ? 'w-1/2' : 'w-full')}>
+           
+
             <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="outline"
-                  className="w-full justify-between flex-row"
-                  disabled={isOff}
-                >
-                  <Text>{MONTHS[startMonth]}</Text>
-                  <ChevronDown className="text-muted-foreground" size={18} />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className={cn(isMultiMonth ? 'w-48' : 'w-72')}>
-                <DropdownMenuLabel>
-                  {isMultiMonth ? 'From Month' : 'Select Month'}
-                </DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuGroup>
+            <DropdownMenuTrigger asChild>
+              <Button 
+                variant="outline" 
+                className="w-full justify-between flex-row"
+              >
+                <Text className="text-foreground">{MONTHS[startMonth]}</Text>
+                <ChevronDown size={18} className="text-foreground" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent 
+              align="end"
+              insets={{ left: 12, right: 12 }}
+              className="w-64 native:w-72 bg-background"
+            >
+              <DropdownMenuLabel>Select start month</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <ScrollView style={{ maxHeight: 400 }}>
+                <DropdownMenuGroup className="gap-1">
                   {MONTHS.map((month, index) => (
                     <DropdownMenuItem
                       key={month}
@@ -94,8 +98,9 @@ export default function Form() {
                     </DropdownMenuItem>
                   ))}
                 </DropdownMenuGroup>
-              </DropdownMenuContent>
-            </DropdownMenu>
+              </ScrollView>
+            </DropdownMenuContent>
+          </DropdownMenu>
           </View>
 
           {isMultiMonth && (
@@ -111,20 +116,26 @@ export default function Form() {
                     <ChevronDown className="text-muted-foreground" size={18} />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-48">
-                  <DropdownMenuLabel>To Month</DropdownMenuLabel>
+                <DropdownMenuContent 
+                  align="end"
+                  insets={{ left: 12, right: 12 }}
+                  className="w-64 native:w-72 bg-background"
+                >
+                  <DropdownMenuLabel>Select end month</DropdownMenuLabel>
                   <DropdownMenuSeparator />
-                  <DropdownMenuGroup>
-                    {MONTHS.map((month, index) => (
-                      <DropdownMenuItem
-                        key={month}
-                        onPress={() => setEndMonth(index)}
-                        className={cn(endMonth === index && 'bg-secondary/70')}
-                      >
-                        <Text>{month}</Text>
-                      </DropdownMenuItem>
-                    ))}
-                  </DropdownMenuGroup>
+                  <ScrollView style={{ maxHeight: 400 }}>
+                    <DropdownMenuGroup className="gap-1">
+                      {MONTHS.map((month, index) => (
+                        <DropdownMenuItem
+                          key={month}
+                          onPress={() => setEndMonth(index)}
+                          className={cn(endMonth === index && 'bg-secondary/70')}
+                        >
+                          <Text>{month}</Text>
+                        </DropdownMenuItem>
+                      ))}
+                    </DropdownMenuGroup>
+                  </ScrollView>
                 </DropdownMenuContent>
               </DropdownMenu>
             </View>
@@ -208,7 +219,8 @@ export default function Form() {
       </View>
 
       <Button
-        className="mb-4"
+        className="mb-12"
+        size="lg"
         onPress={() => {
           const formData = {
             customerId: '676725c2737cf785cdaaea38',
@@ -224,7 +236,7 @@ export default function Form() {
         }}
       >
         <Text className="text-primary-foreground font-medium">
-          {isOff ? 'Mark as Paused' : 'Submit Payment'}
+          {isOff ? 'Mark as Paused' : 'Create entry'}
         </Text>
       </Button>
     </ScrollView>
