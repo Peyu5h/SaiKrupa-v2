@@ -1,25 +1,16 @@
 import '~/global.css';
 
-import { DarkTheme, DefaultTheme, Theme, ThemeProvider } from '@react-navigation/native';
 import { SplashScreen, Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import * as React from 'react';
 import { SafeAreaView, View } from 'react-native';
-import { NAV_THEME } from '~/lib/constants';
 import { useColorScheme } from '~/lib/useColorScheme';
 import { PortalHost } from '@rn-primitives/portal';
 import { cn } from '~/lib/utils';
 import { ReactQueryProvider } from '~/components/ReactQueryProvider';
 import { ToastProvider } from '~/components/ui/toast';
 
-const LIGHT_THEME: Theme = {
-  ...DefaultTheme,
-  colors: NAV_THEME.light,
-};
-const DARK_THEME: Theme = {
-  ...DarkTheme,
-  colors: NAV_THEME.dark,
-};
+
 
 export { ErrorBoundary } from 'expo-router';
 
@@ -32,7 +23,6 @@ export default function RootLayout() {
       try {
         await SplashScreen.preventAutoHideAsync();
         await Promise.all([
-          // Add any initialization tasks here
         ]);
       } catch (e) {
         console.warn(e);
@@ -56,10 +46,10 @@ export default function RootLayout() {
 
   return (
     <ReactQueryProvider>
-      <ThemeProvider value={isDarkColorScheme ? DARK_THEME : LIGHT_THEME}>
+      {/* <ThemeProvider value={}> */}
         <ToastProvider>
           <StatusBar style={isDarkColorScheme ? 'light' : 'dark'} />
-          <SafeAreaView className={cn('flex-1 bg-background', isDarkColorScheme ? 'dark' : '')}>
+          <SafeAreaView className={cn('flex-1 bg-background', isDarkColorScheme ? 'dark' : 'light')}>
             <Stack
               screenOptions={{
                 headerShown: false,
@@ -84,7 +74,7 @@ export default function RootLayout() {
             <PortalHost />
           </SafeAreaView>
         </ToastProvider>
-      </ThemeProvider>
+      {/* </ThemeProvider> */}
     </ReactQueryProvider>
   );
 }

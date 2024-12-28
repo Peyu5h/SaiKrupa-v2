@@ -18,7 +18,7 @@ export function getColor(variable: string) {
     'card-foreground': isDarkColorScheme ? '#FFFFFF' : '#0F172A',
     popover: isDarkColorScheme ? '#2A2A2A' : '#FFFFFF',
     'popover-foreground': isDarkColorScheme ? '#FFFFFF' : '#0F172A',
-    primary: isDarkColorScheme ? 'hsl(207 90% 27%)' : '#1E40AF',
+    primary: isDarkColorScheme ? 'hsl(207 90% 27%)' : '#2563e6',
     'primary-foreground': isDarkColorScheme ? 'hsl(207 9% 96.35%)' : '#FFFFFF',
     secondary: isDarkColorScheme ? '#2A2A2A' : '#F1F5F9',
     'secondary-foreground': isDarkColorScheme ? '#FFFFFF' : '#0F172A',

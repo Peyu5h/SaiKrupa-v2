@@ -26,7 +26,9 @@ export const createBill = async (req: Request, res: Response): Promise<void> => 
     const finalEndMonth = endMonth || startMonth;
     const numberOfMonths = finalEndMonth - startMonth + 1;
     const totalMonthlyAmount = monthlyAmount * numberOfMonths;
-    const minimumRequiredAmount = Math.floor(totalMonthlyAmount * 0.95);
+    const minimumRequiredAmount = monthlyAmount === 310 
+      ? Math.max(200 * numberOfMonths, Math.floor(totalMonthlyAmount * 0.65))
+      : Math.floor(totalMonthlyAmount * 0.95);
 
     if (!isOff && amount < minimumRequiredAmount) {
       res.status(400).json({

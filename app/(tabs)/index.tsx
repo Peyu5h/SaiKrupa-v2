@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Alert, Platform, RefreshControl, ScrollView, View } from 'react-native';
+import { Alert, Platform, RefreshControl, ScrollView, View, ActivityIndicator, FlatList } from 'react-native';
 
 import { Button } from '~/components/ui/button';
 
@@ -18,89 +18,93 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import api from '~/lib/api';
 import { useToast } from '~/components/ui/toast';
 import { Input } from '~/components/ui/input';
-import { cn } from '~/lib/utils';
+import { cn, getColor } from '~/lib/utils';
 import { Muted } from '~/components/ui/typography';
-import { ChevronDown } from 'lucide-react-native';
+import { ChevronDown, UserX } from 'lucide-react-native';
 import CustomerCard from '~/components/CustomerCard';
+import { Customer, Payment } from '~/backend/src/utils/types';
 
-interface ApiResponse<T> {
+interface ApiResponse {
   status: boolean;
   message: string;
-  data: T;
+  data: Customer[];
 }
 
-interface Customer {
+interface Month {
   id: string;
-  name: string;
-  address: string;
-  phone: string;
-  stdId: string;
-  customerId: string;
-  registerAt: string;
-  payments: Array<{
-    id: string;
-    customerId: string;
-    year: number;
-    totalDebt: number;
-    totalAdvance: number;
-    updatedAt: string;
-    months: Array<{
-      id: string;
-      paymentId: string;
-      month: number;
-      amount: number;
-      paidVia: string;
-      debt: number;
-      advance: number;
-      paymentDate: string;
-      status: string;
-      note: string | null;
-      createdAt: string;
-    }>;
-  }>;
+  paymentId: string;
+  month: number;
+  amount: number;
+  paidVia: string;
+  debt: number;
+  advance: number;
+  paymentDate: string;
+  status: 'Paid' | 'Partially Paid' | 'Advance Paid' | 'Unpaid' | 'Off';
+  note: string | null;
+  createdAt: string;
 }
 
 export default function Screen() {
   const router = useRouter();
-
   const queryClient = useQueryClient();
   const { toast } = useToast();
-
-  const { data, isLoading, isError, error } = useQuery({
-    queryKey: ['products'],
-    queryFn: async () => {
-      try {
-        const response = await api.get<ApiResponse<Customer[]>>(
-          '/api/customer/676725c2737cf785cdaaea38'
-        );
-
-        if (!response.status) {
-          toast({
-            title: 'Uh oh! Something went wrong',
-            description: response.message,
-            variant: 'destructive',
-          });
-        } else {
-          toast({
-            title: 'Success',
-            description: response.message,
-          });
-        }
-        return response;
-      } catch (error) {
-        toast({
-          title: 'Uh oh! Something went wrong',
-          description: 'Network request failed',
-          variant: 'destructive',
-        });
-        throw error;
-      }
-    },
-  });
 
   const [name, setName] = React.useState('');
   const [customerType, setCustomerType] = React.useState('All');
   const [selectedMonth, setSelectedMonth] = React.useState(new Date().getMonth());
+  const [selectedYear] = React.useState(new Date().getFullYear()); // Current year only
+
+  const { data: customers = [], isLoading, refetch } = useQuery({
+    queryKey: ['customers', name, customerType, selectedMonth, selectedYear],
+    queryFn: async () => {
+      try {
+        const response = await api.get<Customer[]>('api/customer');
+        if (!response.status) {
+          toast({
+            title: 'Error',
+            description: response.message,
+            variant: 'destructive',
+          });
+          return [];
+        }
+
+        return response.data?.filter((customer) => {
+          if (name && !customer.name.toLowerCase().includes(name.toLowerCase())) {
+            return false;
+          }
+
+          const yearPayments = customer.payments.filter(p => p.year === selectedYear);
+          const monthPayment = yearPayments
+            .flatMap(p => p.months)
+            .find(m => m.month === selectedMonth + 1);
+
+          const status = monthPayment?.status || 'Unpaid';
+
+          if (customerType !== 'All') {
+            switch (customerType) {
+              case 'Paid':
+                return status === 'Paid' || status === 'Advance Paid';
+              case 'Unpaid':
+                return status === 'Unpaid';
+              case 'Partial':
+                return status === 'Partially Paid';
+              default:
+                return true;
+            }
+          }
+
+          return true;
+        }) || [];
+      } catch (error) {
+        toast({
+          title: 'Error',
+          description: 'Network request failed',
+          variant: 'destructive',
+        });
+        return [];
+      }
+    },
+  });
 
   const getMonthName = (month: number): string => {
     return new Date(2024, month).toLocaleString('default', { month: 'long' });
@@ -116,14 +120,27 @@ export default function Screen() {
     });
   };
 
+  const LoadingView = () => (
+    <View className="flex-1 justify-center items-center">
+      <View className="bg-card p-6 rounded-xl border border-border">
+        <ActivityIndicator size="large" color={getColor('primary')} />
+        <Text className="text-muted-foreground mt-4">Loading customers...</Text>
+      </View>
+    </View>
+  );
+
+  const EmptyView = () => (
+    <View className="flex-1 justify-center items-center">
+      <View className="bg-card p-6 rounded-xl border border-border items-center">
+        <UserX size={48} className="text-muted-foreground mb-4" />
+        <Text className="text-xl font-medium text-foreground">No customers found</Text>
+        <Text className="text-muted-foreground mt-2">Try adjusting your search criteria</Text>
+      </View>
+    </View>
+  );
+
   return (
     <View className="flex-1 items-center gap-4 p-4 bg-background">
-      {/* <View className="bg-secondary rounded-lg p-4">
-        {isLoading && <Text>Loading...</Text>}
-        {isError && <Text className="text-destructive">Error: {data?.message}</Text>}
-        {data?.data && <Text className="gap-2">{data.message}</Text>}
-      </View> */}
-
       <View className="items-center w-full flex flex-row gap-2 mt-2">
         <View className="flex-1">
           <Input
@@ -234,66 +251,45 @@ export default function Screen() {
         </ScrollView>
       </View>
 
-      <View className="w-full ">
-        <ScrollView
-          showsVerticalScrollIndicator={false}
-          className=""
-          contentContainerStyle={{ paddingBottom: 200 }}
-          scrollEventThrottle={16}
-          refreshControl={<RefreshControl refreshing={false} onRefresh={() => {}} />}
-        >
-          <CustomerCard
-            name="Vijay Bagul"
-            address="room 8 Punjabi chawl"
-            stb="3156457993"
-            date="27-11-2024"
-            amount={310}
-            status="PAID"
+      <View className="flex-1 w-full">
+        {isLoading ? (
+          <LoadingView />
+        ) : customers.length === 0 ? (
+          <EmptyView />
+        ) : (
+          <FlatList
+            data={customers}
+            keyExtractor={(item) => item.id}
+            renderItem={({ item }) => {
+              const yearPayments = (item.payments || []).filter(p => p.year === selectedYear);
+              const monthPayment = yearPayments
+                .flatMap(p => p.months || [])
+                .find(m => m.month === selectedMonth + 1);
+              
+              const currentPayment = yearPayments.find(p => 
+                (p.months || []).some(m => m.month === selectedMonth + 1)
+              );
+
+              return (
+                <CustomerCard
+                  name={item.name}
+                  address={item.address}
+                  stb={item.customerId}
+                  date={monthPayment?.paymentDate ? new Date(monthPayment.paymentDate).toLocaleDateString() : ""}
+                  amount={monthPayment?.amount || 0}
+                  status={monthPayment?.status || 'Unpaid'}
+                  debt={currentPayment?.totalDebt || monthPayment?.debt || 0}
+                  advance={currentPayment?.totalAdvance || monthPayment?.advance || 0}
+                  payments={item.payments}
+                />
+              );
+            }}
+            refreshControl={
+              <RefreshControl refreshing={isLoading} onRefresh={() => refetch()} />
+            }
+            contentContainerStyle={{ paddingBottom: 100 }}
           />
-          <CustomerCard
-            name="Vijay Bagul"
-            address="room 8 Punjabi chawl"
-            stb="3156457993"
-            date="27-11-2024"
-            amount={310}
-            status="PAID"
-          />
-          <CustomerCard
-            name="Vijay Bagul"
-            address="room 8 Punjabi chawl"
-            stb="3156457993"
-            date="27-11-2024"
-            amount={300}
-            status="PARTIAL_PAID"
-            debt={10}
-          />
-          <CustomerCard
-            name="Vijay Bagul"
-            address="room 8 Punjabi chawl"
-            stb="3156457993"
-            date="27-11-2024"
-            amount={320}
-            status="ADVANCE_PAID"
-            advance={10}
-          />
-          <CustomerCard
-            name="Vijay Bagul"
-            address="room 8 Punjabi chawl"
-            stb="3156457993"
-            date="27-11-2024"
-            amount={0}
-            status="UNPAID"
-            isPending={true}
-          />
-          <CustomerCard
-            name="Vijay Bagul"
-            address="room 8 Punjabi chawl"
-            stb="3156457993"
-            date="27-11-2024"
-            amount={0}
-            status="UNPAID"
-          />
-        </ScrollView>
+        )}
       </View>
     </View>
   );

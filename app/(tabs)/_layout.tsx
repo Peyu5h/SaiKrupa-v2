@@ -30,7 +30,7 @@ SplashScreen.preventAutoHideAsync();
 
 const COLORS = {
   primary: {
-    light: 'hsl(214 87% 25%)',
+    light: '#2563e6',
     dark: 'hsl(207 90% 27%)',
   },
   primaryForeground: {
@@ -89,7 +89,7 @@ export default function RootLayout() {
       <Tabs
         initialRouteName="index"
         screenOptions={{
-          //   headerRight: () => <ThemeToggle />,
+            // headerRight: () => <ThemeToggle />,
           tabBarShowLabel: false,
           tabBarStyle: {
             height: 65,
@@ -169,7 +169,7 @@ export default function RootLayout() {
               <Pressable
                 {...props}
                 android_ripple={{
-                  color: COLORS.primary[isDarkColorScheme ? 'dark' : 'light'],
+                  color: COLORS.searchBg[isDarkColorScheme ? 'dark' : 'light'],
                   borderless: true,
                   radius: 28,
                 }}
@@ -201,7 +201,7 @@ export default function RootLayout() {
               <Pressable
                 {...props}
                 android_ripple={{
-                  color: COLORS.primary[isDarkColorScheme ? 'dark' : 'light'],
+                  color: COLORS.searchBg[isDarkColorScheme ? 'dark' : 'light'],
                   borderless: true,
                   radius: 28,
                 }}
@@ -275,7 +275,7 @@ export default function RootLayout() {
               <Pressable
                 {...props}
                 android_ripple={{
-                  color: COLORS.primary[isDarkColorScheme ? 'dark' : 'light'],
+                  color: COLORS.searchBg[isDarkColorScheme ? 'dark' : 'light'],
                   borderless: true,
                   radius: 28,
                 }}
@@ -305,7 +305,7 @@ export default function RootLayout() {
               <Pressable
                 {...props}
                 android_ripple={{
-                  color: COLORS.primary[isDarkColorScheme ? 'dark' : 'light'],
+                  color: COLORS.searchBg[isDarkColorScheme ? 'dark' : 'light'],
                   borderless: true,
                   radius: 28,
                 }}

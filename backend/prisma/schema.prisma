@@ -14,7 +14,7 @@ model Customer {
   phone        String
   stdId        String?
   customerId   String        @unique
-  registerAt   DateTime      @default(now())
+  registerAt   String?    
   payments     Payment[]
   transactions Transaction[]
 }

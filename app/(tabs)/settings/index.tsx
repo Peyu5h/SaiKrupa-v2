@@ -305,16 +305,11 @@ export default function SettingsScreen() {
           <Dialog open={isCreateUserOpen} onOpenChange={setIsCreateUserOpen}>
           <DialogTrigger asChild>
             <Pressable
-              className="w-full bg-primary p-4 rounded-2xl border border-border flex-row items-center justify-center mb-24"
-              android_ripple={{
-                color: getColor('primary'),
-                borderless: false,
-                foreground: true,
-                radius: 92,
-              }}
+              className="w-full bg-primary/10 p-4 rounded-2xl border border-primary-foreground/20 flex-row items-center justify-center mb-24"
+
             >
-              <Plus size={20} color={getColor('primary-foreground')} style={{ marginRight: 8 }} />
-              <Text className="text-foreground/80 font-medium">Add new user</Text>
+              <Plus size={20} color={getColor('primary')} style={{ marginRight: 8 }} />
+              <Text className="text-primary font-medium">Add new user</Text>
             </Pressable>
           </DialogTrigger>
           <DialogContent className="min-w-full">

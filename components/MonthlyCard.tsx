@@ -36,11 +36,11 @@ const MONTHS = [
 const getStatusDisplay = (status: string, debt?: number, advance?: number) => {
   switch (status) {
     case 'Paid':
-      return <Text className="bg-green-600 p-1 rounded-lg px-2 text-sm">PAID</Text>;
+      return <Text className="bg-green-600 text-primary-foreground p-1 rounded-lg px-2 text-sm">PAID</Text>;
     case 'Partially Paid':
       return (
         <View className="items-end">
-          <Text className="bg-yellow-600 p-1 rounded-lg px-2 text-sm">PARTIAL</Text>
+          <Text className="bg-yellow-600 text-primary-foreground p-1 rounded-lg px-2 text-sm">PARTIAL</Text>
           {debt && debt > 0 && (
             <View className="flex-row items-center mt-1">
               <Minus size={12} color={getColor('destructive')} />
@@ -52,7 +52,7 @@ const getStatusDisplay = (status: string, debt?: number, advance?: number) => {
     case 'Advance Paid':
       return (
         <View className="items-end">
-          <Text className="bg-green-600 p-1 rounded-lg px-2 text-sm">PAID</Text>
+          <Text className="bg-green-600 text-primary-foreground p-1 rounded-lg px-2 text-sm">PAID</Text>
           {advance && advance > 0 && (
             <View className="flex-row items-center mt-1">
               <Plus size={12} color="#38a169" />
@@ -62,7 +62,7 @@ const getStatusDisplay = (status: string, debt?: number, advance?: number) => {
         </View>
       );
     default:
-      return <Text className="bg-red-600 p-1 rounded-lg px-2 text-sm">UNPAID</Text>;
+      return <Text className="bg-red-600 text-primary-foreground p-1 rounded-lg px-2 text-sm">UNPAID</Text>;
   }
 };
 

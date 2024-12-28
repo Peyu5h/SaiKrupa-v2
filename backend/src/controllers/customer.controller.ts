@@ -3,7 +3,7 @@ import { prisma } from '../utils/prisma.js';
 
 export const createCustomer = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { name, address, phone, stdId, customerId } = req.body;
+    const { name, address, phone, stdId, customerId, registerAt } = req.body;
 
     if (!name || !address || !phone || !customerId) {
       res.status(400).json({
@@ -25,6 +25,12 @@ export const createCustomer = async (req: Request, res: Response): Promise<void>
       return;
     }
 
+    const formattedRegisterAt = registerAt || new Date().toLocaleDateString('en-GB', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    }).replace(/\//g, '-');
+
     const customer = await prisma.customer.create({
       data: {
         name,
@@ -32,6 +38,7 @@ export const createCustomer = async (req: Request, res: Response): Promise<void>
         phone,
         stdId,
         customerId,
+        registerAt: formattedRegisterAt,
       },
     });
 
@@ -122,18 +129,31 @@ export const getCustomers = async (_req: Request, res: Response): Promise<void> 
       include: {
         payments: {
           include: {
-            months: true,
+            months: {
+              orderBy: { month: 'asc' }
+            },
           },
           orderBy: { year: 'desc' },
-          take: 1,
         },
       },
     });
 
+    const customersWithSummary = customers.map(customer => ({
+      ...customer,
+      billSummary: {
+        totalPaid: customer.payments.reduce(
+          (sum, payment) => sum + payment.months.reduce((mSum, month) => mSum + month.amount, 0),
+          0
+        ),
+        totalDebt: customer.payments.reduce((sum, payment) => sum + payment.totalDebt, 0),
+        totalAdvance: customer.payments.reduce((sum, payment) => sum + payment.totalAdvance, 0),
+      }
+    }));
+
     res.status(200).json({
       status: true,
       message: 'Customers fetched successfully',
-      data: customers,
+      data: customersWithSummary,
     });
   } catch (error) {
     console.error('Error fetching customers:', error);

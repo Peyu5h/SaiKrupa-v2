@@ -40,13 +40,15 @@ const TransactionCard = ({ isLoading }: { isLoading?: boolean }) => {
                 </Tooltip>
               </View>
 
-              <Text className="text-sm  text-muted-foreground mt-2">
+              <View className="flex-row flex-wrap gap-1 mt-2 w-full">
                 {months.map((month) => (
-                  <View key={month} className="bg-primary/20 p-1 px-2 rounded-full ">
-                    <Text className="text-foreground/50 text-xs">{month}</Text>
+                  <View key={month}>
+                    <View className="bg-primary/20 p-1 px-2 rounded-full">
+                      <Text className="text-foreground/50 text-xs">{month}</Text>
+                    </View>
                   </View>
                 ))}
-              </Text>
+              </View>
             </View>
           </View>
           <Text className="font-semibold text-foreground/70">₹910</Text>
