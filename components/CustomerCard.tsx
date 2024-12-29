@@ -5,12 +5,13 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { Text } from './ui/text';
 import * as Clipboard from 'expo-clipboard';
 import { cn } from '~/lib/utils';
-import {  Minus, Plus } from 'lucide-react-native';
+import { Minus, Plus } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 import { useColorScheme } from '~/lib/useColorScheme';
 import { Payment } from '~/backend/src/utils/types';
 
 interface CustomerCardProps {
+  id: string;
   name: string;
   address: string;
   stb: string;
@@ -28,6 +29,7 @@ const truncateText = (text: string, maxLength: number) => {
 };
 
 const CustomerCard = ({
+  id,
   name,
   address,
   stb,
@@ -53,18 +55,24 @@ const CustomerCard = ({
   const handlePress = useCallback(() => {
     router.push({
       pathname: '/(detailsPage)',
-      params: { name, address, stb }
+      params: { id },
     });
-  }, [name, address, stb]);
+  }, [stb]);
 
   const getStatusDisplay = () => {
     switch (status) {
       case 'Paid':
-        return <Text className="bg-green-600 text-primary-foreground p-1 rounded-lg px-4 font-medium text-sm">PAID</Text>;
+        return (
+          <Text className="bg-green-600 text-primary-foreground p-1 rounded-lg px-4 font-medium text-sm">
+            PAID
+          </Text>
+        );
       case 'Partially Paid':
         return (
           <View className="flex flex-col gap-2 items-end">
-            <Text className="bg-yellow-600 text-primary-foreground p-1 rounded-lg px-4 font-medium text-sm">PARTIAL</Text>
+            <Text className="bg-yellow-600 text-primary-foreground p-1 rounded-lg px-4 font-medium text-sm">
+              PARTIAL
+            </Text>
             <View className="text-primary-foreground flex-row items-center gap-1">
               <Minus size={12} color={getColor('destructive')} />
               <Text className="text-destructive text-sm">₹ {debt}</Text>
@@ -74,7 +82,9 @@ const CustomerCard = ({
       case 'Advance Paid':
         return (
           <View className="items-end">
-            <Text className="bg-green-600 text-primary-foreground p-1 rounded-lg px-4 font-medium text-sm">PAID</Text>
+            <Text className="bg-green-600 text-primary-foreground p-1 rounded-lg px-4 font-medium text-sm">
+              PAID
+            </Text>
             <View className="text-muted-foreground mt-1.5 flex-row items-center gap-1">
               <Plus size={12} color="#38a169" />
               <Text className="text-green-600 text-sm">₹ {advance}</Text>
@@ -94,7 +104,7 @@ const CustomerCard = ({
     }
   };
 
-  const {isDarkColorScheme} = useColorScheme();
+  const { isDarkColorScheme } = useColorScheme();
 
   const getPendingMonthsCount = useCallback(() => {
     const currentDate = new Date();
@@ -102,9 +112,9 @@ const CustomerCard = ({
     const currentMonth = currentDate.getMonth() + 1;
 
     const paidMonths = new Set();
-    
-    payments.forEach(payment => {
-      payment.months.forEach(month => {
+
+    payments.forEach((payment) => {
+      payment.months.forEach((month) => {
         if (month.amount > 0) {
           paidMonths.add(`${payment.year}-${month.month}`);
         }
@@ -112,16 +122,21 @@ const CustomerCard = ({
     });
 
     // Get the earliest payment year
-    const startYear = Math.min(...payments.map(p => p.year));
-    
+    const startYear = Math.min(...payments.map((p) => p.year));
+
     // Calculate total months that should be paid
     const totalMonthsRequired = (currentYear - startYear) * 12 + currentMonth;
-    
+
     return Math.max(0, totalMonthsRequired - paidMonths.size);
   }, [payments]);
 
   return (
-    <View className={cn(' p-4 rounded-xl mb-6 border-[1px] border-foreground/10', isDarkColorScheme ? 'bg-card/50' : 'bg-card/80')}>
+    <View
+      className={cn(
+        ' p-4 rounded-xl mb-6 border-[1px] border-foreground/10',
+        isDarkColorScheme ? 'bg-card/50' : 'bg-card/80'
+      )}
+    >
       <View className="w-full flex-row justify-between">
         <View className="space-y-2">
           <Text className="font-medium text-secondary-foreground/80 text-xl">{name}</Text>
@@ -191,7 +206,7 @@ const CustomerCard = ({
               // radius: 75,
               borderless: false,
             }}
-            className="border bg-card border-foreground/20 p-[20px] px-8 rounded-xl"
+            className="z-24 border bg-card border-foreground/20 p-[20px] px-8 rounded-xl"
           >
             <Text className="text-foreground/50">Show details</Text>
           </Pressable>

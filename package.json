@@ -54,6 +54,7 @@
     "expo-status-bar": "~2.0.0",
     "expo-system-ui": "~4.0.3",
     "formik": "^2.4.6",
+    "jotai": "^2.11.0",
     "ky": "^1.7.4",
     "lucide-react-native": "^0.378.0",
     "morgan": "^1.10.0",

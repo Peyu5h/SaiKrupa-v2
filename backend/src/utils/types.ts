@@ -63,12 +63,46 @@ export interface Customer {
   address: string;
   phone: string;
   stdId: string;
-  customerId: string; 
+  customerId: string;
   registerAt: string;
   payments: Payment[];
   billSummary?: {
     totalPaid: number;
     totalDebt: number;
     totalAdvance: number;
+  };
+}
+
+export interface BillSummary {
+  totalPaid: number;
+  totalDebt: number;
+  totalAdvance: number;
+  paymentHistory: Array<{
+    year: number;
+    monthlyBreakdown: Array<MonthPayment>;
+  }>;
+}
+
+export interface CustomerDetailsResponse {
+  status: boolean;
+  message: string;
+  customer: Customer;
+  billSummary: {
+    totalPaid: number;
+    totalDebt: number;
+    totalAdvance: number;
+    paymentHistory: Array<{
+      year: number;
+      monthlyBreakdown: Array<{
+        month: number;
+        amount: number;
+        paidVia?: string;
+        paymentDate?: Date;
+        status: 'Paid' | 'Partially Paid' | 'Advance Paid' | 'Unpaid' | 'Off';
+        debt: number;
+        advance: number;
+        note?: string;
+      }>;
+    }>;
   };
 }

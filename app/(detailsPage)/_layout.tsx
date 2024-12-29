@@ -3,11 +3,7 @@ import type {
   MaterialTopTabNavigationOptions,
 } from '@react-navigation/material-top-tabs';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import {
-  useTheme,
-  type ParamListBase,
-  type TabNavigationState,
-} from '@react-navigation/native';
+import { useTheme, type ParamListBase, type TabNavigationState } from '@react-navigation/native';
 import { withLayoutContext } from 'expo-router';
 import { View, Pressable } from 'react-native';
 import { Text } from '~/components/ui/text';
@@ -16,6 +12,11 @@ import { getColor } from '~/lib/utils';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { PortalHost } from '@rn-primitives/portal';
+import { Skeleton } from '~/components/ui/skeleton';
+import { useCustomerDetails } from '~/hooks/useCustomerDetails';
+import { useAtom } from 'jotai';
+import { currentIdAtom } from '~/lib/atom';
+import { useEffect, useMemo } from 'react';
 
 const { Navigator } = createMaterialTopTabNavigator();
 
@@ -27,9 +28,26 @@ const MaterialTopTabs = withLayoutContext<
 >(Navigator);
 
 export default function MaterialTopTabsLayout() {
-  const { colors } = useTheme();
   const router = useRouter();
-  const params = useLocalSearchParams();
+  const { id } = useLocalSearchParams();
+
+  // Convert id to string safely
+  const customerId = useMemo(() => {
+    if (Array.isArray(id)) {
+      return id[0] || '';
+    }
+    return id || '';
+  }, [id]);
+
+  const { customer, isLoading } = useCustomerDetails(customerId);
+  const [_, setCurrentId] = useAtom(currentIdAtom);
+
+  // Update the atom when customerId changes
+  useEffect(() => {
+    if (customerId) {
+      setCurrentId(customerId);
+    }
+  }, [customerId]);
 
   return (
     <View className="flex-1 mt-10 bg-background">
@@ -45,9 +63,13 @@ export default function MaterialTopTabsLayout() {
         >
           <ChevronLeft color={getColor('secondary-foreground')} size={24} />
         </Pressable>
-        <View>
-          <Text className="text-lg font-medium">{params.name}</Text>
-          <Text className="text-muted-foreground">{params.address}</Text>
+        <View className="flex-1 gap-0.5">
+          <Text className="text-lg font-medium">
+            {customer?.name || <Skeleton className="w-24 h-6 mb-1" />}
+          </Text>
+          <Text className="text-muted-foreground">
+            {customer?.address || <Skeleton className="w-48 h-6 mt-1" />}
+          </Text>
         </View>
       </View>
 
@@ -89,20 +111,19 @@ export default function MaterialTopTabsLayout() {
           }}
         />
         <MaterialTopTabs.Screen
-          name="form"
+          name="form/index"
           options={{
             title: 'Make Entry',
           }}
         />
         <MaterialTopTabs.Screen
-          name="history"
+          name="history/index"
           options={{
             title: 'Monthly Report',
           }}
         />
       </MaterialTopTabs>
       {/* <PortalHost /> */}
-
     </View>
   );
 }

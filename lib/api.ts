@@ -25,7 +25,7 @@ interface ApiResponse<T = unknown> {
   data?: T;
 }
 
-const apiUrl = 'https://c3f4-49-128-172-37.ngrok-free.app/';
+const apiUrl = 'https://5da7-49-128-172-37.ngrok-free.app/';
 console.log(apiUrl);
 
 const createInstance = () => {

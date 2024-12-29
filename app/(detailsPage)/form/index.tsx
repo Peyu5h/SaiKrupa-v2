@@ -14,7 +14,11 @@ import {
   DropdownMenuTrigger,
 } from '~/components/ui/dropdown-menu';
 import { ChevronDown } from 'lucide-react-native';
-import { cn, getColor } from '~/lib/utils';
+import { cn } from '~/lib/utils';
+import { useCustomerDetails } from '~/hooks/useCustomerDetails';
+import { useLocalSearchParams } from 'expo-router';
+import { useAtom } from 'jotai';
+import { currentIdAtom } from '~/lib/atom';
 
 const MONTHLY_AMOUNTS = [310, 390, 450];
 const PAYMENT_METHODS = ['Cash', 'UPI'] as const;
@@ -35,7 +39,32 @@ const MONTHS = [
 
 const SUGGESTED_AMOUNTS = [300, 350, 400, 500];
 
+const removeUndefined = (obj: Record<string, any>) => {
+  return Object.fromEntries(Object.entries(obj).filter(([_, value]) => value !== undefined));
+};
+
 export default function Form() {
+  const [customerId, setCustomerId] = useAtom(currentIdAtom);
+  const { customer, isLoading } = useCustomerDetails(customerId);
+
+  console.log('ID:', customerId);
+
+  if (isLoading) {
+    return (
+      <View className="flex-1 p-4 bg-background">
+        <Text>Loading customer details...</Text>
+      </View>
+    );
+  }
+
+  if (!customer) {
+    return (
+      <View className="flex-1 p-4 bg-background">
+        <Text>Customer not found</Text>
+      </View>
+    );
+  }
+
   const [isOff, setIsOff] = useState(false);
   const [isMultiMonth, setIsMultiMonth] = useState(false);
   const [startMonth, setStartMonth] = useState(new Date().getMonth());
@@ -45,8 +74,20 @@ export default function Form() {
   const [amount, setAmount] = useState('');
   const [note, setNote] = useState('');
 
-  const handleQuickAmount = (value: number) => {
-    setAmount(value.toString());
+  const handleSubmit = () => {
+    const formData = {
+      customerId: customerId, // Use the actual customer ID from params
+      monthlyAmount,
+      startMonth: startMonth + 1,
+      endMonth: isMultiMonth ? endMonth + 1 : undefined,
+      amount: isOff ? 0 : parseInt(amount),
+      paidVia: paymentMethod,
+      wasOff: isOff,
+      note: note || undefined,
+    };
+
+    const formattedData = removeUndefined(formData);
+    console.log('Submitting:', formattedData);
   };
 
   return (
@@ -67,40 +108,35 @@ export default function Form() {
 
         <View className={cn('flex-row gap-4', isMultiMonth ? 'justify-between' : 'justify-center')}>
           <View className={cn('flex-1', isMultiMonth ? 'w-1/2' : 'w-full')}>
-           
-
             <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button 
-                variant="outline" 
-                className="w-full justify-between flex-row"
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="w-full justify-between flex-row">
+                  <Text className="text-foreground">{MONTHS[startMonth]}</Text>
+                  <ChevronDown size={18} className="text-foreground" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                align="end"
+                insets={{ left: 12, right: 12 }}
+                className="w-64 native:w-72 bg-background"
               >
-                <Text className="text-foreground">{MONTHS[startMonth]}</Text>
-                <ChevronDown size={18} className="text-foreground" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent 
-              align="end"
-              insets={{ left: 12, right: 12 }}
-              className="w-64 native:w-72 bg-background"
-            >
-              <DropdownMenuLabel>Select start month</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <ScrollView style={{ maxHeight: 400 }}>
-                <DropdownMenuGroup className="gap-1">
-                  {MONTHS.map((month, index) => (
-                    <DropdownMenuItem
-                      key={month}
-                      onPress={() => setStartMonth(index)}
-                      className={cn(startMonth === index && 'bg-secondary/70')}
-                    >
-                      <Text>{month}</Text>
-                    </DropdownMenuItem>
-                  ))}
-                </DropdownMenuGroup>
-              </ScrollView>
-            </DropdownMenuContent>
-          </DropdownMenu>
+                <DropdownMenuLabel>Select start month</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <ScrollView style={{ maxHeight: 400 }}>
+                  <DropdownMenuGroup className="gap-1">
+                    {MONTHS.map((month, index) => (
+                      <DropdownMenuItem
+                        key={month}
+                        onPress={() => setStartMonth(index)}
+                        className={cn(startMonth === index && 'bg-secondary/70')}
+                      >
+                        <Text>{month}</Text>
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuGroup>
+                </ScrollView>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </View>
 
           {isMultiMonth && (
@@ -116,7 +152,7 @@ export default function Form() {
                     <ChevronDown className="text-muted-foreground" size={18} />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent 
+                <DropdownMenuContent
                   align="end"
                   insets={{ left: 12, right: 12 }}
                   className="w-64 native:w-72 bg-background"
@@ -221,19 +257,8 @@ export default function Form() {
       <Button
         className="mb-12"
         size="lg"
-        onPress={() => {
-          const formData = {
-            customerId: '676725c2737cf785cdaaea38',
-            monthlyAmount,
-            startMonth: startMonth + 1,
-            endMonth: isMultiMonth ? endMonth + 1 : undefined,
-            amount: isOff ? 0 : parseInt(amount),
-            paidVia: paymentMethod,
-            wasOff: isOff,
-            note: note || undefined,
-          };
-          console.log(formData);
-        }}
+        onPress={handleSubmit}
+        disabled={!customerId || isLoading}
       >
         <Text className="text-primary-foreground font-medium">
           {isOff ? 'Mark as Paused' : 'Create entry'}

@@ -18,7 +18,7 @@ import { Input } from '~/components/ui/input';
 import { cn, getColor } from '~/lib/utils';
 import { Muted } from '~/components/ui/typography';
 import { ChevronDown, UserX } from 'lucide-react-native';
-import { Customer, Payment } from '~/backend/src/utils/types';
+import { Customer } from '~/backend/src/utils/types';
 import CustomerCard from '~/components/CustomerCard';
 
 const queryClient = new QueryClient({
@@ -37,12 +37,11 @@ export default function SearchScreen() {
   const [selectedYear, setSelectedYear] = React.useState(new Date().getFullYear());
   const [availableYears, setAvailableYears] = React.useState<number[]>([]);
 
-  const getPaymentStatus = React.useCallback((monthPayment?: any) => {
-    if (!monthPayment) return 'UNPAID';
-    return monthPayment.status || 'UNPAID';
-  }, []);
-
-  const { data: customers = [], isLoading, refetch } = useQuery({
+  const {
+    data: customers = [],
+    isLoading,
+    refetch,
+  } = useQuery({
     queryKey: ['customers', name, customerType, selectedMonth, selectedYear],
     queryFn: async () => {
       try {
@@ -57,43 +56,44 @@ export default function SearchScreen() {
         }
 
         const years = new Set<number>();
-        response.data?.forEach(customer => {
-          customer.payments.forEach(payment => {
+        response.data?.forEach((customer) => {
+          customer.payments.forEach((payment) => {
             years.add(payment.year);
           });
         });
-        
+
         const sortedYears = Array.from(years).sort((a, b) => b - a);
         setAvailableYears(sortedYears);
 
-        // Filter data
-        return response.data?.filter(customer => {
-          if (name && !customer.name.toLowerCase().includes(name.toLowerCase())) {
-            return false;
-          }
-
-          const yearPayments = customer.payments.filter(p => p.year === selectedYear);
-          const monthPayment = yearPayments
-            .flatMap(p => p.months)
-            .find(m => m.month === selectedMonth + 1);
-
-          const status = monthPayment?.status || 'Unpaid';
-
-          if (customerType !== 'All') {
-            switch (customerType) {
-              case 'Paid':
-                return status === 'Paid' || status === 'Advance Paid';
-              case 'Unpaid':
-                return status === 'Unpaid';
-              case 'Partial':
-                return status === 'Partially Paid';
-              default:
-                return true;
+        return (
+          response.data?.filter((customer) => {
+            if (name && !customer.name.toLowerCase().includes(name.toLowerCase())) {
+              return false;
             }
-          }
 
-          return true;
-        }) || [];
+            const yearPayments = customer.payments.filter((p) => p.year === selectedYear);
+            const monthPayment = yearPayments
+              .flatMap((p) => p.months)
+              .find((m) => m.month === selectedMonth + 1);
+
+            const status = monthPayment?.status || 'Unpaid';
+
+            if (customerType !== 'All') {
+              switch (customerType) {
+                case 'Paid':
+                  return status === 'Paid' || status === 'Advance Paid';
+                case 'Unpaid':
+                  return status === 'Unpaid';
+                case 'Partial':
+                  return status === 'Partially Paid';
+                default:
+                  return true;
+              }
+            }
+
+            return true;
+          }) || []
+        );
       } catch (error) {
         toast({
           title: 'Error',
@@ -105,55 +105,61 @@ export default function SearchScreen() {
     },
   });
 
-  const renderCustomerItem = React.useCallback(({ item }: { item: Customer }) => {
-    const yearPayments = item.payments.filter(p => p.year === selectedYear);
-    const monthPayment = yearPayments
-      .flatMap(p => p.months)
-      .find(m => m.month === selectedMonth + 1);
-    
-    const currentPayment = yearPayments.find(p => 
-      p.months.some(m => m.month === selectedMonth + 1)
-    );
+  const renderCustomerItem = React.useCallback(
+    ({ item }: { item: Customer }) => {
+      const yearPayments = item.payments.filter((p) => p.year === selectedYear);
+      const monthPayment = yearPayments
+        .flatMap((p) => p.months)
+        .find((m) => m.month === selectedMonth + 1);
 
-    // Calculate if all months are cleared up to current month
-    const currentDate = new Date();
-    const currentYear = currentDate.getFullYear();
-    const currentMonth = currentDate.getMonth() + 1;
-    
-    const isAllMonthsCleared = (() => {
-      const paidMonths = new Set();
-      
-      item.payments.forEach(payment => {
-        if (payment.year > currentYear) return;
-        
-        payment.months.forEach(month => {
-          if (payment.year === currentYear && month.month > currentMonth) return;
-          if (month.amount > 0) {
-            paidMonths.add(`${payment.year}-${month.month}`);
-          }
+      const currentPayment = yearPayments.find((p) =>
+        p.months.some((m) => m.month === selectedMonth + 1)
+      );
+
+      const currentDate = new Date();
+      const currentYear = currentDate.getFullYear();
+      const currentMonth = currentDate.getMonth() + 1;
+
+      const isAllMonthsCleared = (() => {
+        const paidMonths = new Set();
+
+        item.payments.forEach((payment) => {
+          if (payment.year > currentYear) return;
+
+          payment.months.forEach((month) => {
+            if (payment.year === currentYear && month.month > currentMonth) return;
+            if (month.amount > 0) {
+              paidMonths.add(`${payment.year}-${month.month}`);
+            }
+          });
         });
-      });
 
-      const totalMonthsRequired = (currentYear - Math.min(...item.payments.map(p => p.year))) * 12 + currentMonth;
-      
-      return paidMonths.size >= totalMonthsRequired;
-    })();
+        const totalMonthsRequired =
+          (currentYear - Math.min(...item.payments.map((p) => p.year))) * 12 + currentMonth;
 
-    return (
-      <CustomerCard
-        name={item.name}
-        address={item.address}
-        stb={item.customerId}
-        date={monthPayment?.paymentDate ? new Date(monthPayment.paymentDate).toLocaleDateString() : ""}
-        amount={monthPayment?.amount || 0}
-        status={monthPayment?.status || 'Unpaid'}
-        debt={currentPayment?.totalDebt || monthPayment?.debt || 0}
-        advance={currentPayment?.totalAdvance || monthPayment?.advance || 0}
-        isPending={!isAllMonthsCleared}
-        payments={item.payments}
-      />
-    );
-  }, [selectedYear, selectedMonth]);
+        return paidMonths.size >= totalMonthsRequired;
+      })();
+
+      return (
+        <CustomerCard
+          id={item.id}
+          name={item.name}
+          address={item.address}
+          stb={item.customerId}
+          date={
+            monthPayment?.paymentDate ? new Date(monthPayment.paymentDate).toLocaleDateString() : ''
+          }
+          amount={monthPayment?.amount || 0}
+          status={monthPayment?.status || 'Unpaid'}
+          debt={currentPayment?.totalDebt || monthPayment?.debt || 0}
+          advance={currentPayment?.totalAdvance || monthPayment?.advance || 0}
+          isPending={!isAllMonthsCleared}
+          payments={item.payments}
+        />
+      );
+    },
+    [selectedYear, selectedMonth]
+  );
 
   const LoadingView = () => (
     <View className="flex-1 justify-center items-center">
@@ -167,9 +173,8 @@ export default function SearchScreen() {
   const EmptyView = () => (
     <View className="flex-1 justify-center items-center">
       <View className="bg-card p-6 rounded-xl border border-border items-center">
-        <UserX size={48} className="text-muted-foreground mb-4" />
-        <Text className="text-xl font-medium text-foreground">No customers found</Text>
-        <Text className="text-muted-foreground mt-2">Try adjusting your search criteria</Text>
+        <Text className="text-xl font-medium text-foreground">No customers</Text>
+        <Text className="text-muted-foreground mt-2">Customer not found</Text>
       </View>
     </View>
   );
@@ -179,16 +184,24 @@ export default function SearchScreen() {
       data={customers}
       keyExtractor={(item, index) => item.id?.toString() || index.toString()}
       renderItem={renderCustomerItem}
-      refreshControl={
-        <RefreshControl refreshing={isLoading} onRefresh={() => refetch()} />
-      }
+      refreshControl={<RefreshControl refreshing={isLoading} onRefresh={() => refetch()} />}
       contentContainerStyle={{ paddingBottom: 100 }}
     />
   );
 
   const MONTHS = [
-    'January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December',
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
   ];
 
   return (
@@ -206,7 +219,7 @@ export default function SearchScreen() {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
-                style={{height:54}}
+                style={{ height: 54 }}
                 variant="outline"
                 className="flex-row items-center justify-between "
               >
@@ -280,15 +293,12 @@ export default function SearchScreen() {
         <View className="w-1/2 flex-1">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button 
-                variant="outline" 
-                className="w-full justify-between flex-row"
-              >
+              <Button variant="outline" className="w-full justify-between flex-row">
                 <Text className="text-foreground">{MONTHS[selectedMonth]}</Text>
                 <ChevronDown size={18} className="text-foreground" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent 
+            <DropdownMenuContent
               align="end"
               insets={{ left: 12, right: 12 }}
               className="w-64 native:w-72 bg-background"
@@ -297,8 +307,8 @@ export default function SearchScreen() {
               <DropdownMenuSeparator />
               <DropdownMenuGroup className="gap-1">
                 {MONTHS.map((month, index) => (
-                  <DropdownMenuItem 
-                    key={month} 
+                  <DropdownMenuItem
+                    key={month}
                     onPress={() => setSelectedMonth(index)}
                     className={cn(
                       'flex-col items-start gap-1',
@@ -316,15 +326,12 @@ export default function SearchScreen() {
         <View className="w-1/2 flex-1">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button 
-                variant="outline" 
-                className="w-full justify-between flex-row"
-              >
+              <Button variant="outline" className="w-full justify-between flex-row">
                 <Text className="text-foreground">{selectedYear}</Text>
                 <ChevronDown size={18} className="text-foreground" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent 
+            <DropdownMenuContent
               align="end"
               insets={{ left: 12, right: 12 }}
               className="w-64 native:w-72 bg-background"
@@ -333,8 +340,8 @@ export default function SearchScreen() {
               <DropdownMenuSeparator />
               <DropdownMenuGroup className="gap-1">
                 {availableYears.map((year) => (
-                  <DropdownMenuItem 
-                    key={year} 
+                  <DropdownMenuItem
+                    key={year}
                     onPress={() => setSelectedYear(year)}
                     className={cn(
                       'flex-col items-start gap-1',
@@ -351,13 +358,7 @@ export default function SearchScreen() {
       </View>
 
       <View className="flex-1 w-full bg-background">
-        {isLoading ? (
-          <LoadingView />
-        ) : customers.length === 0 ? (
-          <EmptyView />
-        ) : (
-          <CustomerList />
-        )}
+        {isLoading ? <LoadingView /> : customers.length === 0 ? <EmptyView /> : <CustomerList />}
       </View>
     </View>
   );

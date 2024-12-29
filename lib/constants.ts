@@ -1,5 +1,3 @@
-import { useThemedColor } from './utils';
-
 export const NAV_THEME = {
   light: {
     background: '#F8FAFC',

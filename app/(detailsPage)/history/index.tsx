@@ -15,6 +15,10 @@ import { cn, getColor } from '~/lib/utils';
 import { HistoryIcon } from 'lucide-react-native';
 import { Button } from '~/components/ui/button';
 import { MonthlyBreakdown } from '~/components/MonthlyCard';
+import { useLocalSearchParams } from 'expo-router';
+import { useCustomerDetails } from '~/hooks/useCustomerDetails';
+import { useAtom } from 'jotai';
+import { currentIdAtom } from '~/lib/atom';
 
 const DUMMY_PAYMENTS = {
   2024: [
@@ -71,6 +75,13 @@ const DUMMY_PAYMENTS = {
 };
 
 const History = () => {
+  const [customerId, setCustomerId] = useAtom(currentIdAtom);
+
+  const { customer } = useCustomerDetails(customerId);
+
+  // Add debug logging
+  console.log('History ID:', customer);
+
   const [selectedYear, setSelectedYear] = useState(0);
   const YEARS = [2024, 2023, 2022, 2021, 2020];
   const [isLoading, setIsLoading] = useState(true);
