@@ -1,6 +1,6 @@
 import { View, Pressable } from 'react-native';
 import React from 'react';
-import { getColor } from '~/lib/utils';
+  import { useThemeColors } from '~/lib/utils';
 import { Ionicons } from '@expo/vector-icons';
 import { Text } from '~/components/ui/text';
 import {
@@ -35,6 +35,8 @@ const AllTransactionsCard = ({
     setIsDeleteOpen(false);
     onDelete?.();
   };
+  const { getColor } = useThemeColors();
+
 
   return (
     <View className="mb-4 w-full bg-secondary/50 p-4 rounded-2xl border border-border">

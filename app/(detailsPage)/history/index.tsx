@@ -11,88 +11,39 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '~/components/ui/dropdown-menu';
-import { cn, getColor } from '~/lib/utils';
+import { cn } from '~/lib/utils';
 import { HistoryIcon } from 'lucide-react-native';
 import { Button } from '~/components/ui/button';
 import { MonthlyBreakdown } from '~/components/MonthlyCard';
-import { useLocalSearchParams } from 'expo-router';
 import { useCustomerDetails } from '~/hooks/useCustomerDetails';
 import { useAtom } from 'jotai';
 import { currentIdAtom } from '~/lib/atom';
+import { useThemeColors } from '~/lib/utils';
 
-const DUMMY_PAYMENTS = {
-  2024: [
-    {
-      month: 1,
-      amount: 300,
-      paidVia: 'Cash',
-      status: 'Partially Paid',
-      debt: 10,
-      advance: 0,
-      paymentDate: '2024-01-21T20:32:49.019Z',
-      note: 'Partial payment made',
-    },
-    {
-      month: 2,
-      amount: 310,
-      paidVia: 'UPI',
-      status: 'Paid',
-      debt: 0,
-      advance: 0,
-      paymentDate: '2024-02-21T20:33:14.620Z',
-    },
-    {
-      month: 3,
-      amount: 320,
-      paidVia: 'Cash',
-      status: 'Advance Paid',
-      debt: 0,
-      advance: 50,
-      paymentDate: '2024-03-21T20:33:14.620Z',
-      note: 'Advance payment for next month',
-    },
-  ],
-  2023: [
-    {
-      month: 11,
-      amount: 300,
-      paidVia: 'Cash',
-      status: 'Paid',
-      debt: 0,
-      advance: 0,
-      paymentDate: '2023-11-15T20:32:49.019Z',
-    },
-    {
-      month: 12,
-      amount: 310,
-      paidVia: 'UPI',
-      status: 'Paid',
-      debt: 0,
-      advance: 0,
-      paymentDate: '2023-12-20T20:33:14.620Z',
-    },
-  ],
-};
+export default function History() {
+  const [customerId] = useAtom(currentIdAtom);
+  const { data, isLoading } = useCustomerDetails(customerId);
+  const billSummary = data?.billSummary;
+  const { getColor } = useThemeColors();
 
-const History = () => {
-  const [customerId, setCustomerId] = useAtom(currentIdAtom);
-
-  const { customer } = useCustomerDetails(customerId);
-
-  // Add debug logging
-  console.log('History ID:', customer);
-
+  // Get available years from billSummary
+  const YEARS = billSummary?.paymentHistory.map(ph => ph.year).sort((a, b) => b - a) || [];
   const [selectedYear, setSelectedYear] = useState(0);
-  const YEARS = [2024, 2023, 2022, 2021, 2020];
-  const [isLoading, setIsLoading] = useState(true);
 
-  // Simulate loading
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 2000);
-    return () => clearTimeout(timer);
-  }, [selectedYear]);
+  // Transform billSummary data for MonthlyBreakdown
+  const transformedPayments = billSummary?.paymentHistory.reduce((acc, yearData) => {
+    acc[yearData.year] = yearData.monthlyBreakdown.map(payment => ({
+      month: payment.month,
+      amount: payment.amount,
+      paidVia: payment.paidVia,
+      status: payment.status,
+      debt: payment.debt,
+      advance: payment.advance,
+      paymentDate: payment.paymentDate,
+      note: payment.note
+    }));
+    return acc;
+  }, {} as Record<number, any[]>) || {};
 
   return (
     <View className="flex-1 bg-background p-4">
@@ -133,12 +84,10 @@ const History = () => {
         refreshControl={<RefreshControl refreshing={false} onRefresh={() => {}} />}
       >
         <MonthlyBreakdown
-          payments={DUMMY_PAYMENTS[YEARS[selectedYear] as keyof typeof DUMMY_PAYMENTS] || []}
+          payments={transformedPayments[YEARS[selectedYear]] || []}
           isLoading={isLoading}
         />
       </ScrollView>
     </View>
   );
-};
-
-export default History;
+}

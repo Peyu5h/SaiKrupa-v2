@@ -1,6 +1,5 @@
 import { Pressable, View } from 'react-native';
 import React, { useState, useCallback } from 'react';
-import { getColor } from '~/lib/utils';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Text } from './ui/text';
 import * as Clipboard from 'expo-clipboard';
@@ -9,6 +8,7 @@ import { Minus, Plus } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 import { useColorScheme } from '~/lib/useColorScheme';
 import { Payment } from '~/backend/src/utils/types';
+import { useThemeColors } from '~/lib/utils';
 
 interface CustomerCardProps {
   id: string;
@@ -43,6 +43,8 @@ const CustomerCard = ({
 }: CustomerCardProps) => {
   const [isCopied, setIsCopied] = useState(false);
   const router = useRouter();
+  const { getColor } = useThemeColors();
+  const { isDarkColorScheme } = useColorScheme();
 
   const handleCopy = async () => {
     await Clipboard.setStringAsync(stb);
@@ -103,8 +105,6 @@ const CustomerCard = ({
         return null;
     }
   };
-
-  const { isDarkColorScheme } = useColorScheme();
 
   const getPendingMonthsCount = useCallback(() => {
     const currentDate = new Date();

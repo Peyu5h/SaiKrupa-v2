@@ -1,12 +1,12 @@
-import { RefreshControl, ScrollView, View, Platform, Pressable } from 'react-native';
-import React, { useState, useEffect } from 'react';
+import { RefreshControl, ScrollView, View, Platform, Pressable, ActivityIndicator } from 'react-native';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Text } from '~/components/ui/text';
 import AllTransactionsCard from '~/components/AllTransactionsCard';
 import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
 import { Input } from '~/components/ui/input';
 import { Button } from '~/components/ui/button';
 import { ChevronDown } from 'lucide-react-native';
-import { getColor, cn } from '~/lib/utils';
+import { cn, useThemeColors } from '~/lib/utils';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,6 +17,44 @@ import {
   DropdownMenuSeparator,
 } from '~/components/ui/dropdown-menu';
 import { Muted } from '~/components/ui/typography';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import api from '~/lib/api';
+import { useToast } from '~/components/ui/toast';
+
+// Add interfaces for type safety
+interface TransactionMonth {
+  id: string;
+  paymentId: string;
+  month: number;
+  amount: number;
+  paidVia: string;
+  debt: number;
+  advance: number;
+  paymentDate: string;
+  status: string;
+  note: string | null;
+}
+
+interface Transaction {
+  id: string;
+  customerId: string;
+  customer: {
+    id: string;
+    name: string;
+    address: string;
+    phone: string;
+    stdId: string;
+    customerId: string;
+    registerAt: string;
+  };
+  months: TransactionMonth[];
+}
+
+interface ApiResponse {
+  status: boolean;
+  message: string;
+  data: Transaction[];
+}
 
 const HistoryScreen = () => {
   const PAYMENT_MODES = ['All', 'UPI', 'Cash'];
@@ -34,19 +72,66 @@ const HistoryScreen = () => {
     'November',
     'December',
   ];
-  const COLORS = {
-    mutedForeground: getColor('muted-foreground'),
-    foreground: getColor('foreground'),
-    primary: getColor('primary'),
-    background: getColor('background'),
-  };
+
+  
   const INITIAL_DATE = new Date(2024, 0, 1);
+
+    const { getColor } = useThemeColors();
+    const COLORS = {
+      mutedForeground: getColor('muted-foreground'),
+      foreground: getColor('foreground'),
+      primary: getColor('primary'),
+      background: getColor('background'),
+    };
+
 
   const [fromDate, setFromDate] = useState(INITIAL_DATE);
   const [selectedMonth, setSelectedMonth] = useState(MONTHS[0]);
   const [showFromDatePicker, setShowFromDatePicker] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [paymentMode, setPaymentMode] = useState(PAYMENT_MODES[0]);
+
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+
+  const {
+    data: transactionsData = [],
+    isLoading,
+    refetch,
+  } = useQuery({
+    queryKey: ['transactions', searchQuery, paymentMode, fromDate, selectedMonth] as const,
+    queryFn: async () => {
+      const response = await api.get<ApiResponse>('api/bills/transactions');
+      if (!response.status) {
+        throw new Error(response.message);
+      }
+      return response.data;
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: async (transactionId: string) => {
+      const response = await api.delete(`api/bills/transactions/${transactionId}`);
+      if (!response.status) {
+        throw new Error(response.message);
+      }
+      return response;
+    },
+    onSuccess: () => {
+      toast({
+        title: 'Success',
+        description: 'Transaction deleted successfully',
+      });
+      queryClient.invalidateQueries({ queryKey: ['transactions'] });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: 'Error',
+        description: error.message || 'Failed to delete transaction',
+        variant: 'destructive',
+      });
+    },
+  });
 
   useEffect(() => {
     const monthIndex = fromDate.getMonth();
@@ -67,43 +152,38 @@ const HistoryScreen = () => {
     setSearchQuery('');
   };
 
-  const transactions = [
-    {
-      id: '1',
-      name: 'Piyush Bagul',
-      date: '23/12/2024',
-      amount: 910,
-      paymentMethod: 'GPAY',
-    },
-    {
-      id: '2',
-      name: 'Piyush Bagul',
-      date: '23/12/2024',
-      amount: 910,
-      paymentMethod: 'GPAY',
-    },
-    {
-      id: '3',
-      name: 'Piyush Bagul',
-      date: '23/12/2024',
-      amount: 910,
-      paymentMethod: 'GPAY',
-    },
-    {
-      id: '4',
-      name: 'Piyush Bagul',
-      date: '23/12/2024',
-      amount: 910,
-      paymentMethod: 'GPAY',
-    },
-    {
-      id: '5',
-      name: 'Piyush Bagul',
-      date: '23/12/2024',
-      amount: 910,
-      paymentMethod: 'GPAY',
-    },
-  ];
+  // Memoize the transaction card render function
+  const renderTransaction = useCallback((transaction: Transaction) => (
+    <AllTransactionsCard
+      key={transaction.id}
+      name={transaction.customer.name}
+      date={new Date(transaction.months[0].paymentDate).toLocaleDateString()}
+      amount={transaction.months[0].amount}
+      paymentMethod={transaction.months[0].paidVia}
+      onDelete={() => deleteMutation.mutate(transaction.id)}
+    />
+  ), [deleteMutation]);
+
+  // Memoize the transaction list
+  const transactionList = useMemo(() => {
+    if (isLoading) {
+      return (
+        <View className="flex-1 justify-center items-center py-8">
+          <ActivityIndicator size="large" color={COLORS.primary} />
+        </View>
+      );
+    }
+
+    if ((transactionsData as Transaction[]).length === 0) {
+      return (
+        <View className="flex-1 justify-center items-center py-8">
+          <Text className="text-muted-foreground">No transactions found</Text>
+        </View>
+      );
+    }
+
+    return (transactionsData as Transaction[]).map(renderTransaction);
+  }, [isLoading, transactionsData, renderTransaction]);
 
   return (
     <View className="flex-1 bg-background p-4 w-full">
@@ -225,19 +305,11 @@ const HistoryScreen = () => {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 100 }}
         scrollEventThrottle={16}
-        refreshControl={<RefreshControl refreshing={false} onRefresh={() => {}} />}
+        refreshControl={
+          <RefreshControl refreshing={isLoading} onRefresh={() => refetch()} />
+        }
       >
-        {/* Transactions List */}
-        {transactions.map((transaction) => (
-          <AllTransactionsCard
-            key={transaction.id}
-            name={transaction.name}
-            date={transaction.date}
-            amount={transaction.amount}
-            paymentMethod={transaction.paymentMethod}
-            onDelete={() => console.log('Delete transaction:', transaction.id)}
-          />
-        ))}
+        {transactionList}
       </ScrollView>
     </View>
   );

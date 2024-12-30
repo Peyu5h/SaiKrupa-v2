@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, ScrollView } from 'react-native';
+import React, { useState, useCallback } from 'react';
+import { View, ScrollView, ActivityIndicator } from 'react-native';
 import { Text } from '~/components/ui/text';
 import { Button } from '~/components/ui/button';
 import { Switch } from '~/components/ui/switch';
@@ -19,6 +19,11 @@ import { useCustomerDetails } from '~/hooks/useCustomerDetails';
 import { useLocalSearchParams } from 'expo-router';
 import { useAtom } from 'jotai';
 import { currentIdAtom } from '~/lib/atom';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import api from '~/lib/api';
+import { useToast } from '~/components/ui/toast';
+import { useRouter } from 'expo-router';
+import { NAV_THEME } from '~/lib/constants';
 
 const MONTHLY_AMOUNTS = [310, 390, 450];
 const PAYMENT_METHODS = ['Cash', 'UPI'] as const;
@@ -44,39 +49,80 @@ const removeUndefined = (obj: Record<string, any>) => {
 };
 
 export default function Form() {
-  const [customerId, setCustomerId] = useAtom(currentIdAtom);
-  const { customer, isLoading } = useCustomerDetails(customerId);
-
-  console.log('ID:', customerId);
-
-  if (isLoading) {
-    return (
-      <View className="flex-1 p-4 bg-background">
-        <Text>Loading customer details...</Text>
-      </View>
-    );
-  }
-
-  if (!customer) {
-    return (
-      <View className="flex-1 p-4 bg-background">
-        <Text>Customer not found</Text>
-      </View>
-    );
-  }
-
+  const [customerId] = useAtom(currentIdAtom);
+  const { data } = useCustomerDetails(customerId);
   const [isOff, setIsOff] = useState(false);
   const [isMultiMonth, setIsMultiMonth] = useState(false);
   const [startMonth, setStartMonth] = useState(new Date().getMonth());
-  const [endMonth, setEndMonth] = useState(startMonth);
+  const [endMonth, setEndMonth] = useState(new Date().getMonth());
   const [monthlyAmount, setMonthlyAmount] = useState(310);
   const [paymentMethod, setPaymentMethod] = useState<(typeof PAYMENT_METHODS)[number]>('Cash');
   const [amount, setAmount] = useState('');
   const [note, setNote] = useState('');
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+  const router = useRouter();
 
-  const handleSubmit = () => {
+  const resetForm = useCallback(() => {
+    setIsOff(false);
+    setIsMultiMonth(false);
+    setStartMonth(new Date().getMonth());
+    setEndMonth(new Date().getMonth());
+    setMonthlyAmount(310);
+    setPaymentMethod('Cash');
+    setAmount('');
+    setNote('');
+  }, []);
+
+  const createBillMutation = useMutation({
+    mutationFn: async (formData: any) => {
+      const response = await api.post('api/bills/create', formData);
+      if (!response.status) {
+        throw new Error(response.message);
+      }
+      return response;
+    },
+    onSuccess: () => {
+      toast({
+        title: 'Success',
+        description: 'Payment entry created successfully',
+      });
+      queryClient.invalidateQueries({ queryKey: ['transactions'] });
+      queryClient.invalidateQueries({ queryKey: ['customerDetails'] });
+      queryClient.invalidateQueries({ queryKey: ['customerDetails', customerId] });
+      resetForm();
+      router.back();
+    },
+    onError: (error: Error) => {
+      toast({
+        title: 'Error',
+        description: error.message || 'Payment already exists',
+        variant: 'destructive',
+      });
+    }
+  });
+
+  const handleSubmit = useCallback(() => {
+    if (!customerId) {
+      toast({
+        title: 'Error',
+        description: 'Customer ID is required',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    if (!isOff && (!amount || isNaN(parseInt(amount)))) {
+      toast({
+        title: 'Error',
+        description: 'Please enter a valid amount',
+        variant: 'destructive',
+      });
+      return;
+    }
+
     const formData = {
-      customerId: customerId, // Use the actual customer ID from params
+      customerId,
       monthlyAmount,
       startMonth: startMonth + 1,
       endMonth: isMultiMonth ? endMonth + 1 : undefined,
@@ -87,8 +133,14 @@ export default function Form() {
     };
 
     const formattedData = removeUndefined(formData);
-    console.log('Submitting:', formattedData);
-  };
+    createBillMutation.mutate(formattedData);
+    console.log(formattedData);
+  }, [customerId, isOff, amount, monthlyAmount, startMonth, endMonth, isMultiMonth, paymentMethod, note]);
+
+  const customer = data?.customer;
+  if (!customer) {
+    return null;
+  }
 
   return (
     <ScrollView className="flex-1 p-4 bg-background">
@@ -258,10 +310,15 @@ export default function Form() {
         className="mb-12"
         size="lg"
         onPress={handleSubmit}
-        disabled={!customerId || isLoading}
+        disabled={!customerId}
       >
         <Text className="text-primary-foreground font-medium">
-          {isOff ? 'Mark as Paused' : 'Create entry'}
+           {createBillMutation.isPending
+            ? <ActivityIndicator size="small" color={NAV_THEME.dark.text} />
+            : isOff 
+              ? 'Mark as Paused' 
+              : 'Create entry'}
+            
         </Text>
       </Button>
     </ScrollView>

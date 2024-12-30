@@ -21,7 +21,7 @@ import {
 } from '~/components/ui/dialog';
 import { Formik, useFormik } from 'formik';
 import { useRouter } from 'expo-router';
-import { cn, getColor } from '~/lib/utils';
+import { cn,  useThemeColors } from '~/lib/utils';
 
 const DEFAULT_PLANS = [
   { id: 1, monthlyAmount: 310, profitPerCustomer: 120 },
@@ -42,6 +42,7 @@ export default function SettingsScreen() {
   const router = useRouter();
   const [defaultName, setDefaultName] = useState('Vijay');
   const [isEditingName, setIsEditingName] = useState(false);
+  const { getColor } = useThemeColors();
 
   const columnWidths = [width * 0.33, width * 0.33, width * 0.33];
 

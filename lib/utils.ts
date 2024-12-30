@@ -7,38 +7,63 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export function getColor(variable: string) {
+// Define colors object outside
+const colorTokens = {
+  light: {
+    background: '#F8FAFC',
+    foreground: '#0F172A',
+    card: '#FFFFFF',
+    'card-foreground': '#0F172A',
+    popover: '#FFFFFF',
+    'popover-foreground': '#0F172A',
+    primary: '#2563e6',
+    'primary-foreground': '#FFFFFF',
+    secondary: '#F1F5F9',
+    'secondary-foreground': '#0F172A',
+    muted: '#F1F5F9',
+    'muted-foreground': '#64748B',
+    accent: '#F8FAFC',
+    'accent-foreground': '#0F172A',
+    destructive: '#DC2626',
+    'destructive-foreground': '#FFFFFF',
+    border: '#E2E8F0',
+    input: '#F1F5F9',
+    ring: '#1E40AF',
+  },
+  dark: {
+    background: '#1A1A1A',
+    foreground: '#FFFFFF',
+    card: '#2A2A2A',
+    'card-foreground': '#FFFFFF',
+    popover: '#2A2A2A',
+    'popover-foreground': '#FFFFFF',
+    primary: 'hsl(207 90% 27%)',
+    'primary-foreground': 'hsl(207 9% 96.35%)',
+    secondary: '#2A2A2A',
+    'secondary-foreground': '#FFFFFF',
+    muted: '#2A2A2A',
+    'muted-foreground': '#666666',
+    accent: '#2A2A2A',
+    'accent-foreground': '#FFFFFF',
+    destructive: '#FF4444',
+    'destructive-foreground': '#FFFFFF',
+    border: '#2A2A2A',
+    input: '#2A2A2A',
+    ring: 'hsl(207 90% 27%)',
+  },
+};
+
+// Create a hook for getting themed colors
+export function useThemeColors() {
   const colorScheme = useColorScheme();
-  const isDarkColorScheme = colorScheme === 'dark';
-
-  const colors = {
-    background: isDarkColorScheme ? '#1A1A1A' : '#F8FAFC',
-    foreground: isDarkColorScheme ? '#FFFFFF' : '#0F172A',
-    card: isDarkColorScheme ? '#2A2A2A' : '#FFFFFF',
-    'card-foreground': isDarkColorScheme ? '#FFFFFF' : '#0F172A',
-    popover: isDarkColorScheme ? '#2A2A2A' : '#FFFFFF',
-    'popover-foreground': isDarkColorScheme ? '#FFFFFF' : '#0F172A',
-    primary: isDarkColorScheme ? 'hsl(207 90% 27%)' : '#2563e6',
-    'primary-foreground': isDarkColorScheme ? 'hsl(207 9% 96.35%)' : '#FFFFFF',
-    secondary: isDarkColorScheme ? '#2A2A2A' : '#F1F5F9',
-    'secondary-foreground': isDarkColorScheme ? '#FFFFFF' : '#0F172A',
-    muted: isDarkColorScheme ? '#2A2A2A' : '#F1F5F9',
-    'muted-foreground': isDarkColorScheme ? '#666666' : '#64748B',
-    accent: isDarkColorScheme ? '#2A2A2A' : '#F8FAFC',
-    'accent-foreground': isDarkColorScheme ? '#FFFFFF' : '#0F172A',
-    destructive: isDarkColorScheme ? '#FF4444' : '#DC2626',
-    'destructive-foreground': isDarkColorScheme ? '#FFFFFF' : '#FFFFFF',
-    border: isDarkColorScheme ? '#2A2A2A' : '#E2E8F0',
-    input: isDarkColorScheme ? '#2A2A2A' : '#F1F5F9',
-    ring: isDarkColorScheme ? 'hsl(207 90% 27%)' : '#1E40AF',
-  };
-
-  return colors[variable as keyof typeof colors] || variable;
+  const colors = useMemo(() => colorTokens[colorScheme === 'dark' ? 'dark' : 'light'], [colorScheme]);
+  
+  const getColor = useMemo(() => 
+    (variable: keyof typeof colorTokens.light) => colors[variable] || variable,
+    [colors]
+  );
+  
+  return { getColor };
 }
 
-export const useThemedColor = (colorName: string) => {
-  const colorScheme = useColorScheme();
-  const isDarkColorScheme = colorScheme === 'dark';
 
-  return getColor(colorName);
-};

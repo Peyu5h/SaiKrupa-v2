@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Text } from '~/components/ui/text';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { ChevronDown, ChevronLeft } from 'lucide-react-native';
-import { cn, getColor } from '~/lib/utils';
+import { cn } from '~/lib/utils';
 import * as Clipboard from 'expo-clipboard';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { HistoryIcon } from '~/components/icons';
@@ -116,7 +116,9 @@ const LoadingState = () => (
 
 const DetailsPage = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const { customer, billSummary, isLoading } = useCustomerDetails(id);
+  const { data, isLoading } = useCustomerDetails(id);
+  const customer = data?.customer;
+  const billSummary = data?.billSummary;
 
   const [isCopied, setIsCopied] = useState(false);
   const [isCopiedId, setIsCopiedId] = useState(false);

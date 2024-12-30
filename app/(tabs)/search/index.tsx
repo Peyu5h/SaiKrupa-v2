@@ -15,7 +15,7 @@ import { useQuery, QueryClient } from '@tanstack/react-query';
 import api from '~/lib/api';
 import { useToast } from '~/components/ui/toast';
 import { Input } from '~/components/ui/input';
-import { cn, getColor } from '~/lib/utils';
+import { cn, useThemeColors } from '~/lib/utils';
 import { Muted } from '~/components/ui/typography';
 import { ChevronDown, UserX } from 'lucide-react-native';
 import { Customer } from '~/backend/src/utils/types';
@@ -30,6 +30,7 @@ const queryClient = new QueryClient({
 });
 
 export default function SearchScreen() {
+  const { getColor } = useThemeColors();
   const { toast } = useToast();
   const [name, setName] = React.useState('');
   const [customerType, setCustomerType] = React.useState('All');

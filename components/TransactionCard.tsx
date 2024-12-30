@@ -1,10 +1,10 @@
 import { Platform, View } from 'react-native';
 import React from 'react';
-import { getColor } from '~/lib/utils';
 import { Ionicons } from '@expo/vector-icons';
 import { Text } from '~/components/ui/text';
 import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
 import { Info, Loader2 } from 'lucide-react-native';
+import { useThemeColors } from '~/lib/utils';
 
 type MonthData = {
   month: number;
@@ -47,6 +47,8 @@ const TransactionCard = ({
     const endMonth = monthNames[months[months.length - 1].month - 1];
     return `${startMonth} - ${endMonth}`;
   };
+
+  const { getColor } = useThemeColors();
 
   return (
     <View>

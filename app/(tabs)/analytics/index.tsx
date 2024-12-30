@@ -1,7 +1,6 @@
 import { View, ScrollView } from 'react-native';
 import React, { useState } from 'react';
 import { Text } from '~/components/ui/text';
-import { getColor } from '~/lib/utils';
 import { IndianRupee, TrendingUp, Users, Wallet, ChevronDown, Calendar } from 'lucide-react-native';
 import { Button } from '~/components/ui/button';
 import {
@@ -13,7 +12,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '~/components/ui/dropdown-menu';
-import { cn } from '~/lib/utils';
+import { cn, useThemeColors } from '~/lib/utils';
 
 const MONTHS = [
   'January', 'February', 'March', 'April', 'May', 'June',
@@ -26,6 +25,9 @@ const AnalyticsScreen = () => {
   const [selectedYear, setSelectedYear] = useState(2024);
   const [selectedViewType, setSelectedViewType] = useState<'Monthly' | 'Yearly'>('Monthly');
   const [selectedMonth, setSelectedMonth] = useState<string>(MONTHS[0]);
+
+  const { getColor } = useThemeColors();
+
 
   const stats = {
     totalCustomers: 45,
