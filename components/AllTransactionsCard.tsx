@@ -13,14 +13,9 @@ import {
   DialogTrigger,
 } from '~/components/ui/dialog';
 import { Button } from './ui/button';
+import { TransactionCardProps } from '~/backend/src/utils/types';
 
-interface TransactionCardProps {
-  name: string;
-  date: string;
-  amount: number;
-  paymentMethod: string;
-  onDelete?: () => void;
-}
+
 
 const AllTransactionsCard = ({
   name,

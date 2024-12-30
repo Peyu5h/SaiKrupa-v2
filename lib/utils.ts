@@ -7,7 +7,6 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-// Define colors object outside
 const colorTokens = {
   light: {
     background: '#F8FAFC',
@@ -53,7 +52,6 @@ const colorTokens = {
   },
 };
 
-// Create a hook for getting themed colors
 export function useThemeColors() {
   const colorScheme = useColorScheme();
   const colors = useMemo(() => colorTokens[colorScheme === 'dark' ? 'dark' : 'light'], [colorScheme]);

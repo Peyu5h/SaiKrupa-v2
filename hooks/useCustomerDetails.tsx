@@ -10,7 +10,7 @@ export function useCustomerDetails(id: string | null) {
     queryKey: ['customerDetails', id],
     queryFn: async () => {
       if (!id) return null;
-
+      
       const response = await api.get<CustomerDetailsResponse>(`api/customer/${id}`);
       if (!response.status) {
         toast({
@@ -20,10 +20,11 @@ export function useCustomerDetails(id: string | null) {
         });
         return null;
       }
-
       return response.data;
     },
-    enabled: Boolean(id),
-    staleTime: 30000, // Data will be considered fresh for 30 seconds
+    enabled: Boolean(id && id !== 'undefined'),
+    staleTime: 30000,
   });
 }
+
+

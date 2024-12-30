@@ -97,16 +97,45 @@ export const deleteCustomer = async (req: Request, res: Response): Promise<void>
       return;
     }
 
-    const customer = await prisma.customer.findUnique({ where: { id } });
-    if (!customer) {
-      res.status(404).json({
-        status: false,
-        message: 'Customer not found',
-      });
-      return;
-    }
+    const currentDate = new Date();
+    const formattedDeleteDate = currentDate.toLocaleDateString('en-GB', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    }).replace(/\//g, '-');
 
-    await prisma.customer.delete({ where: { id } });
+    await prisma.customer.update({
+      where: { id },
+      data: {
+        deletedAt: formattedDeleteDate
+      }
+    });
+
+    await prisma.$transaction(async (tx) => {
+      await tx.monthPayment.deleteMany({
+        where: {
+          payment: {
+            customerId: id
+          }
+        }
+      });
+
+      await tx.payment.deleteMany({
+        where: {
+          customerId: id
+        }
+      });
+
+      await tx.transaction.deleteMany({
+        where: {
+          customerId: id
+        }
+      });
+
+      await tx.customer.delete({
+        where: { id }
+      });
+    });
 
     res.status(200).json({
       status: true,

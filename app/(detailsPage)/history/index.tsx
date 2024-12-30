@@ -26,11 +26,9 @@ export default function History() {
   const billSummary = data?.billSummary;
   const { getColor } = useThemeColors();
 
-  // Get available years from billSummary
   const YEARS = billSummary?.paymentHistory.map(ph => ph.year).sort((a, b) => b - a) || [];
   const [selectedYear, setSelectedYear] = useState(0);
 
-  // Transform billSummary data for MonthlyBreakdown
   const transformedPayments = billSummary?.paymentHistory.reduce((acc, yearData) => {
     acc[yearData.year] = yearData.monthlyBreakdown.map(payment => ({
       month: payment.month,

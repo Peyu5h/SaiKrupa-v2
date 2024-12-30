@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { View, ScrollView, ActivityIndicator } from 'react-native';
 import { Text } from '~/components/ui/text';
 import { Button } from '~/components/ui/button';
@@ -16,7 +16,6 @@ import {
 import { ChevronDown } from 'lucide-react-native';
 import { cn } from '~/lib/utils';
 import { useCustomerDetails } from '~/hooks/useCustomerDetails';
-import { useLocalSearchParams } from 'expo-router';
 import { useAtom } from 'jotai';
 import { currentIdAtom } from '~/lib/atom';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -24,25 +23,12 @@ import api from '~/lib/api';
 import { useToast } from '~/components/ui/toast';
 import { useRouter } from 'expo-router';
 import { NAV_THEME } from '~/lib/constants';
+import { MONTHS } from '~/backend/src/utils/types';
 
-const MONTHLY_AMOUNTS = [310, 390, 450];
+const MONTHLY_AMOUNTS = [310, 400, 600];
 const PAYMENT_METHODS = ['Cash', 'UPI'] as const;
-const MONTHS = [
-  'January',
-  'February',
-  'March',
-  'April',
-  'May',
-  'June',
-  'July',
-  'August',
-  'September',
-  'October',
-  'November',
-  'December',
-];
 
-const SUGGESTED_AMOUNTS = [300, 350, 400, 500];
+const SUGGESTED_AMOUNTS = [300, 310, 350, 400];
 
 const removeUndefined = (obj: Record<string, any>) => {
   return Object.fromEntries(Object.entries(obj).filter(([_, value]) => value !== undefined));
@@ -50,42 +36,107 @@ const removeUndefined = (obj: Record<string, any>) => {
 
 export default function Form() {
   const [customerId] = useAtom(currentIdAtom);
-  const { data } = useCustomerDetails(customerId);
+  const { data, isLoading } = useCustomerDetails(customerId);
   const [isOff, setIsOff] = useState(false);
   const [isMultiMonth, setIsMultiMonth] = useState(false);
-  const [startMonth, setStartMonth] = useState(new Date().getMonth());
-  const [endMonth, setEndMonth] = useState(new Date().getMonth());
-  const [monthlyAmount, setMonthlyAmount] = useState(310);
-  const [paymentMethod, setPaymentMethod] = useState<(typeof PAYMENT_METHODS)[number]>('Cash');
-  const [amount, setAmount] = useState('');
-  const [note, setNote] = useState('');
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const router = useRouter();
 
+  const getNextAvailableMonth = useCallback(() => {
+    if (!data?.customer?.payments) return new Date().getMonth();
+    
+    const currentYear = new Date().getFullYear();
+    const paidMonths = data.customer.payments
+      .filter(payment => payment.year === currentYear)
+      .flatMap(payment => payment.months)
+      .map(month => month.month - 1);
+    
+    const currentMonth = new Date().getMonth();
+    for (let month = currentMonth; month < 12; month++) {
+      if (!paidMonths.includes(month)) {
+        return month;
+      }
+    }
+    
+    for (let month = 0; month < currentMonth; month++) {
+      if (!paidMonths.includes(month)) {
+        return month;
+      }
+    }
+    
+    return currentMonth; 
+  }, [data]);
+
+  const [startMonth, setStartMonth] = useState(getNextAvailableMonth());
+  const [endMonth, setEndMonth] = useState(getNextAvailableMonth());
+  const [monthlyAmount, setMonthlyAmount] = useState(310);
+  const [paymentMethod, setPaymentMethod] = useState<(typeof PAYMENT_METHODS)[number]>('Cash');
+  const [amount, setAmount] = useState('');
+  const [note, setNote] = useState('');
+
+  const paidMonths = useMemo(() => {
+    if (!data?.customer?.payments) return [];
+    
+    const currentYear = new Date().getFullYear();
+    return data.customer.payments
+      .filter(payment => payment.year === currentYear)
+      .flatMap(payment => payment.months)
+      .map(month => month.month - 1);
+  }, [data]);
+
+  const isMonthDisabled = useCallback((monthIndex: number) => {
+    return paidMonths.includes(monthIndex);
+  }, [paidMonths]);
+
   const resetForm = useCallback(() => {
     setIsOff(false);
     setIsMultiMonth(false);
-    setStartMonth(new Date().getMonth());
-    setEndMonth(new Date().getMonth());
+    setStartMonth(getNextAvailableMonth());
+    setEndMonth(getNextAvailableMonth());
     setMonthlyAmount(310);
     setPaymentMethod('Cash');
     setAmount('');
     setNote('');
   }, []);
 
+  const isFormValid = useCallback(() => {
+    if (isOff) {
+      return true; 
+    }
+    
+    if (!amount || isNaN(parseInt(amount))) {
+      return false;
+    }
+    
+    if (isMultiMonth && endMonth < startMonth) {
+      return false;
+    }
+    
+    return true;
+  }, [isOff, amount, isMultiMonth, startMonth, endMonth]);
+
   const createBillMutation = useMutation({
     mutationFn: async (formData: any) => {
-      const response = await api.post('api/bills/create', formData);
-      if (!response.status) {
-        throw new Error(response.message);
-      }
-      return response;
+      // try {
+        const response = await api.post('api/bills/create', formData);
+        console.log(response);
+
+        if (!response.status) {
+          throw new Error(response.message);
+        }
+        return response;
+      // } catch (error: any) {
+      //   console.log(error);
+      //   const errorMessage = error.response?.data?.message || error.message;
+      //   // console.log(errorMessage);
+      //   throw new Error(errorMessage);
+      // }
     },
-    onSuccess: () => {
+    onSuccess: (response) => {
       toast({
         title: 'Success',
-        description: 'Payment entry created successfully',
+        description: response.message || 'Payment entry created successfully',
       });
       queryClient.invalidateQueries({ queryKey: ['transactions'] });
       queryClient.invalidateQueries({ queryKey: ['customerDetails'] });
@@ -96,7 +147,7 @@ export default function Form() {
     onError: (error: Error) => {
       toast({
         title: 'Error',
-        description: error.message || 'Payment already exists',
+        description: "Payment for this month is already exists or Amount is too less",
         variant: 'destructive',
       });
     }
@@ -130,16 +181,26 @@ export default function Form() {
       paidVia: paymentMethod,
       wasOff: isOff,
       note: note || undefined,
+      customer: {
+        connect: {
+          id: customerId
+        }
+      }
     };
 
     const formattedData = removeUndefined(formData);
     createBillMutation.mutate(formattedData);
-    console.log(formattedData);
   }, [customerId, isOff, amount, monthlyAmount, startMonth, endMonth, isMultiMonth, paymentMethod, note]);
 
   const customer = data?.customer;
   if (!customer) {
     return null;
+  }
+
+  if (isLoading) {
+    return <View className="flex-1 items-center justify-center bg-background">
+      <ActivityIndicator size="large" color={NAV_THEME.dark.text} />
+    </View>
   }
 
   return (
@@ -172,7 +233,9 @@ export default function Form() {
                 insets={{ left: 12, right: 12 }}
                 className="w-64 native:w-72 bg-background"
               >
-                <DropdownMenuLabel>Select start month</DropdownMenuLabel>
+                <DropdownMenuLabel>
+                  <Text>Select start month</Text>
+                </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <ScrollView style={{ maxHeight: 400 }}>
                   <DropdownMenuGroup className="gap-1">
@@ -180,15 +243,23 @@ export default function Form() {
                       <DropdownMenuItem
                         key={month}
                         onPress={() => setStartMonth(index)}
-                        className={cn(startMonth === index && 'bg-secondary/70')}
+                        className={cn(
+                          startMonth === index && 'bg-secondary/70',
+                          isMonthDisabled(index) && 'opacity-50'
+                        )}
+                        disabled={isMonthDisabled(index)}
                       >
-                        <Text>{month}</Text>
+                        <Text className={cn(isMonthDisabled(index) && 'text-muted-foreground')}>
+                          {month}
+                          {isMonthDisabled(index) && ' (Paid)'}
+                        </Text>
                       </DropdownMenuItem>
                     ))}
                   </DropdownMenuGroup>
                 </ScrollView>
               </DropdownMenuContent>
             </DropdownMenu>
+
           </View>
 
           {isMultiMonth && (
@@ -209,7 +280,9 @@ export default function Form() {
                   insets={{ left: 12, right: 12 }}
                   className="w-64 native:w-72 bg-background"
                 >
-                  <DropdownMenuLabel>Select end month</DropdownMenuLabel>
+                  <DropdownMenuLabel>
+                    <Text>Select end month</Text>
+                  </DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <ScrollView style={{ maxHeight: 400 }}>
                     <DropdownMenuGroup className="gap-1">
@@ -217,9 +290,16 @@ export default function Form() {
                         <DropdownMenuItem
                           key={month}
                           onPress={() => setEndMonth(index)}
-                          className={cn(endMonth === index && 'bg-secondary/70')}
+                          className={cn(
+                            endMonth === index && 'bg-secondary/70',
+                            isMonthDisabled(index) && 'opacity-50'
+                          )}
+                          disabled={isMonthDisabled(index)}
                         >
-                          <Text>{month}</Text>
+                          <Text className={cn(isMonthDisabled(index) && 'text-muted-foreground')}>
+                            {month}
+                            {isMonthDisabled(index) && ' (Paid)'}
+                          </Text>
                         </DropdownMenuItem>
                       ))}
                     </DropdownMenuGroup>
@@ -229,9 +309,15 @@ export default function Form() {
             </View>
           )}
         </View>
+      {startMonth && 
+        isMonthDisabled(startMonth) && (
+          <Text className="text-red-500">This month is already paid</Text>
+        )
+      }
       </View>
 
       <View className="mb-6">
+
         <Text className="text-base font-medium mb-2">Monthly Amount</Text>
         <View className="flex-row gap-2">
           {MONTHLY_AMOUNTS.map((value) => (
@@ -307,18 +393,17 @@ export default function Form() {
       </View>
 
       <Button
-        className="mb-12"
+        className="mb-12 bg-green-600"
         size="lg"
         onPress={handleSubmit}
-        disabled={!customerId}
+        disabled={!customerId || !isFormValid() || createBillMutation.isPending || isMonthDisabled(startMonth)}
       >
         <Text className="text-primary-foreground font-medium">
-           {createBillMutation.isPending
+          {createBillMutation.isPending
             ? <ActivityIndicator size="small" color={NAV_THEME.dark.text} />
             : isOff 
               ? 'Mark as Paused' 
               : 'Create entry'}
-            
         </Text>
       </Button>
     </ScrollView>

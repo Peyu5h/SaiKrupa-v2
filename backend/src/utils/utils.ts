@@ -18,10 +18,9 @@ export function distributePayment(
   const payments = [];
   let remainingAmount = totalPaid;
 
-  // Distribute full payments
   for (let i = 0; i < monthsCovered; i++) {
     const month = startMonth + i;
-    if (month > 12) break; // Don't exceed December
+    if (month > 12) break; 
 
     payments.push({
       month,
@@ -33,7 +32,6 @@ export function distributePayment(
     remainingAmount -= monthlyAmount;
   }
 
-  // Handle remaining amount if any
   if (remainingAmount > 0 && startMonth + monthsCovered <= 12) {
     payments.push({
       month: startMonth + monthsCovered,
@@ -72,12 +70,10 @@ export function generateMonthlyPayments(
     const effectiveAmount = monthAmount + currentAdvance;
 
     if (effectiveAmount >= monthlyAmount) {
-      //if we have enough with advance
       const extraAmount = effectiveAmount - monthlyAmount;
       currentAdvance = extraAmount;
       currentDebt = 0;
     } else {
-      //if we dont have enough with advance
       currentDebt = monthlyAmount - effectiveAmount;
       currentAdvance = 0;
     }

@@ -2,7 +2,6 @@ import { RefreshControl, ScrollView, View, Platform, Pressable, ActivityIndicato
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Text } from '~/components/ui/text';
 import AllTransactionsCard from '~/components/AllTransactionsCard';
-import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
 import { Input } from '~/components/ui/input';
 import { Button } from '~/components/ui/button';
 import { ChevronDown } from 'lucide-react-native';
@@ -20,74 +19,18 @@ import { Muted } from '~/components/ui/typography';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '~/lib/api';
 import { useToast } from '~/components/ui/toast';
+import { ApiResponse, MONTHS, Transaction } from '~/backend/src/utils/types';
 
-// Add interfaces for type safety
-interface TransactionMonth {
-  id: string;
-  paymentId: string;
-  month: number;
-  amount: number;
-  paidVia: string;
-  debt: number;
-  advance: number;
-  paymentDate: string;
-  status: string;
-  note: string | null;
-}
 
-interface Transaction {
-  id: string;
-  customerId: string;
-  customer: {
-    id: string;
-    name: string;
-    address: string;
-    phone: string;
-    stdId: string;
-    customerId: string;
-    registerAt: string;
-  };
-  months: TransactionMonth[];
-}
-
-interface ApiResponse {
-  status: boolean;
-  message: string;
-  data: Transaction[];
-}
 
 const HistoryScreen = () => {
   const PAYMENT_MODES = ['All', 'UPI', 'Cash'];
-  const MONTHS = [
-    'January',
-    'February',
-    'March',
-    'April',
-    'May',
-    'June',
-    'July',
-    'August',
-    'September',
-    'October',
-    'November',
-    'December',
-  ];
-
   
-  const INITIAL_DATE = new Date(2024, 0, 1);
-
-    const { getColor } = useThemeColors();
-    const COLORS = {
-      mutedForeground: getColor('muted-foreground'),
-      foreground: getColor('foreground'),
-      primary: getColor('primary'),
-      background: getColor('background'),
-    };
-
-
-  const [fromDate, setFromDate] = useState(INITIAL_DATE);
-  const [selectedMonth, setSelectedMonth] = useState(MONTHS[0]);
-  const [showFromDatePicker, setShowFromDatePicker] = useState(false);
+  const currentYear = new Date().getFullYear();
+  const [selectedYear, setSelectedYear] = useState(currentYear);
+  const [selectedViewType, setSelectedViewType] = useState<'Monthly' | 'Yearly'>('Monthly');
+  const [selectedMonth, setSelectedMonth] = useState<number>(new Date().getMonth() + 1);
+  const [availableYears] = useState<number[]>([currentYear - 1, currentYear, currentYear + 1]);
   const [searchQuery, setSearchQuery] = useState('');
   const [paymentMode, setPaymentMode] = useState(PAYMENT_MODES[0]);
 
@@ -95,17 +38,17 @@ const HistoryScreen = () => {
   const queryClient = useQueryClient();
 
   const {
-    data: transactionsData = [],
+    data: response,
     isLoading,
     refetch,
-  } = useQuery({
-    queryKey: ['transactions', searchQuery, paymentMode, fromDate, selectedMonth] as const,
-    queryFn: async () => {
+  } = useQuery<ApiResponse>({
+    queryKey: ['transactions', searchQuery, paymentMode, selectedYear, selectedMonth, selectedViewType] as const,
+    queryFn: async ({ queryKey }): Promise<ApiResponse> => {
       const response = await api.get<ApiResponse>('api/bills/transactions');
       if (!response.status) {
         throw new Error(response.message);
       }
-      return response.data;
+      return response as any;
     },
   });
 
@@ -133,26 +76,7 @@ const HistoryScreen = () => {
     },
   });
 
-  useEffect(() => {
-    const monthIndex = fromDate.getMonth();
-    setSelectedMonth(MONTHS[monthIndex]);
-  }, [fromDate]);
 
-  const onFromDateChange = (event: DateTimePickerEvent, selectedDate?: Date) => {
-    setShowFromDatePicker(Platform.OS === 'ios');
-    if (selectedDate) {
-      setFromDate(selectedDate);
-    }
-  };
-
-  const clearFilters = () => {
-    setFromDate(INITIAL_DATE);
-    setSelectedMonth(MONTHS[0]);
-    setPaymentMode(PAYMENT_MODES[0]);
-    setSearchQuery('');
-  };
-
-  // Memoize the transaction card render function
   const renderTransaction = useCallback((transaction: Transaction) => (
     <AllTransactionsCard
       key={transaction.id}
@@ -164,26 +88,25 @@ const HistoryScreen = () => {
     />
   ), [deleteMutation]);
 
-  // Memoize the transaction list
-  const transactionList = useMemo(() => {
-    if (isLoading) {
-      return (
-        <View className="flex-1 justify-center items-center py-8">
-          <ActivityIndicator size="large" color={COLORS.primary} />
-        </View>
-      );
-    }
+  const filteredTransactions = useMemo(() => {
+    if (!response?.data) return [];
+    
+    return response.data.filter((transaction: Transaction) => {
+      const matchesSearch = transaction.customer.name.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesPaymentMode = paymentMode === 'All' || transaction.months.some(m => m.paidVia === paymentMode);
+      const matchesYear = transaction.year === selectedYear;
+      const matchesMonth = selectedViewType === 'Yearly' || 
+        transaction.months.some(m => m.month === selectedMonth);
 
-    if ((transactionsData as Transaction[]).length === 0) {
-      return (
-        <View className="flex-1 justify-center items-center py-8">
-          <Text className="text-muted-foreground">No transactions found</Text>
-        </View>
-      );
-    }
+      return matchesSearch && matchesPaymentMode && matchesYear && matchesMonth;
+    });
+  }, [response?.data, searchQuery, paymentMode, selectedYear, selectedMonth, selectedViewType]);
 
-    return (transactionsData as Transaction[]).map(renderTransaction);
-  }, [isLoading, transactionsData, renderTransaction]);
+  const renderEmptyState = () => (
+    <View className="flex-1 items-center justify-center py-24">
+      <Text className="text-muted-foreground text-lg">No transactions found</Text>
+    </View>
+  );
 
   return (
     <View className="flex-1 bg-background p-4 w-full">
@@ -193,7 +116,7 @@ const HistoryScreen = () => {
             placeholder="Search for customer"
             value={searchQuery}
             onChangeText={setSearchQuery}
-            className="w-full border border-border text-foreground text-lg rounded-lg "
+            className="w-full border border-border text-foreground text-lg rounded-lg"
           />
         </View>
         <View className="flex-0 w-28">
@@ -213,7 +136,7 @@ const HistoryScreen = () => {
               insets={{ left: 12, right: 12 }}
               className="w-64 native:w-72 bg-background"
             >
-              <DropdownMenuLabel>Select payment mode</DropdownMenuLabel>
+              <DropdownMenuLabel>Payment Mode</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuGroup className="gap-1">
                 {PAYMENT_MODES.map((mode) => (
@@ -226,6 +149,7 @@ const HistoryScreen = () => {
                     )}
                   >
                     <Text>{mode}</Text>
+                    <Muted>Filter by {mode.toLowerCase()} payments</Muted>
                   </DropdownMenuItem>
                 ))}
               </DropdownMenuGroup>
@@ -236,25 +160,51 @@ const HistoryScreen = () => {
 
       <View className="flex-row gap-3 mb-4">
         <View className="flex-1">
-          <Button
-            variant="outline"
-            onPress={() => setShowFromDatePicker(true)}
-            className="w-full justify-between flex-row"
-          >
-            <Text className="text-foreground">From: {fromDate.toLocaleDateString()}</Text>
-            <ChevronDown size={18} className="text-muted-foreground" />
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button 
+                variant="outline" 
+                className="w-full justify-between flex-row"
+              >
+                <Text className="text-foreground">{selectedViewType}</Text>
+                <ChevronDown size={18} className="text-foreground" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent 
+              align="end"
+              insets={{ left: 12, right: 12 }}
+              className="w-64 native:w-72 bg-background"
+            >
+              <DropdownMenuLabel>View Type</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuGroup className="gap-1">
+                {['Monthly', 'Yearly'].map((type) => (
+                  <DropdownMenuItem
+                    key={type}
+                    onPress={() => setSelectedViewType(type as 'Monthly' | 'Yearly')}
+                    className={cn(
+                      'flex-col items-start gap-1',
+                      selectedViewType === type && 'bg-secondary/70'
+                    )}
+                  >
+                    <Text>{type}</Text>
+                    <Muted>View {type.toLowerCase()} transactions</Muted>
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </View>
 
-        <View className="flex-1 flex-row gap-2">
-          <View className="flex-1 w-full">
+        {selectedViewType === 'Monthly' && (
+          <View className="flex-1">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button 
                   variant="outline" 
                   className="w-full justify-between flex-row"
                 >
-                  <Text className="text-foreground">{selectedMonth}</Text>
+                  <Text className="text-foreground">{MONTHS[selectedMonth - 1]}</Text>
                   <ChevronDown size={18} className="text-foreground" />
                 </Button>
               </DropdownMenuTrigger>
@@ -266,13 +216,13 @@ const HistoryScreen = () => {
                 <DropdownMenuLabel>Select Month</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup className="gap-1">
-                  {MONTHS.map((month) => (
-                    <DropdownMenuItem 
-                      key={month} 
-                      onPress={() => setSelectedMonth(month)}
+                  {MONTHS.map((month, index) => (
+                    <DropdownMenuItem
+                      key={month}
+                      onPress={() => setSelectedMonth(index + 1)}
                       className={cn(
                         'flex-col items-start gap-1',
-                        selectedMonth === month ? 'bg-secondary/70' : ''
+                        selectedMonth === index + 1 && 'bg-secondary/70'
                       )}
                     >
                       <Text>{month}</Text>
@@ -282,25 +232,42 @@ const HistoryScreen = () => {
               </DropdownMenuContent>
             </DropdownMenu>
           </View>
+        )}
+
+        <View className="flex-1">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="w-full justify-between flex-row">
+                <Text className="text-foreground">{selectedYear}</Text>
+                <ChevronDown size={18} className="text-foreground" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent 
+              align="end"
+              insets={{ left: 12, right: 12 }}
+              className="w-64 native:w-72 bg-background"
+            >
+              <DropdownMenuLabel>Year</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuGroup className="gap-1">
+                {availableYears.map((year) => (
+                  <DropdownMenuItem
+                    key={year}
+                    onPress={() => setSelectedYear(year)}
+                    className={cn(
+                      'flex-col items-start gap-1',
+                      selectedYear === year && 'bg-secondary/70'
+                    )}
+                  >
+                    <Text>{year}</Text>
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </View>
       </View>
 
-      {showFromDatePicker && (
-        <DateTimePicker
-          testID="fromDatePicker"
-          value={fromDate}
-          mode="date"
-          display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-          onChange={onFromDateChange}
-          textColor={COLORS.foreground}
-          accentColor={COLORS.primary}
-          themeVariant="dark"
-          style={{
-            backgroundColor: COLORS.background,
-            width: Platform.OS === 'ios' ? '100%' : undefined,
-          }}
-        />
-      )}
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 100 }}
@@ -309,7 +276,11 @@ const HistoryScreen = () => {
           <RefreshControl refreshing={isLoading} onRefresh={() => refetch()} />
         }
       >
-        {transactionList}
+        {filteredTransactions.length > 0 ? (
+          filteredTransactions.map(renderTransaction)
+        ) : (
+          renderEmptyState()
+        )}
       </ScrollView>
     </View>
   );

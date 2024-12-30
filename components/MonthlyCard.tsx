@@ -5,33 +5,9 @@ import { Text } from '~/components/ui/text';
 import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
 import { Info, Minus, Plus } from 'lucide-react-native';
 import { format } from 'date-fns';
-import { Skeleton } from './ui/skeleton';
+import { MonthlyPayment, MONTHS } from '~/backend/src/utils/types';
 
-interface MonthlyPayment {
-  month: number;
-  amount: number;
-  paidVia: string;
-  status: string;
-  debt?: number;
-  advance?: number;
-  paymentDate: string;
-  note?: string | null;
-}
 
-const MONTHS = [
-  'January',
-  'February',
-  'March',
-  'April',
-  'May',
-  'June',
-  'July',
-  'August',
-  'September',
-  'October',
-  'November',
-  'December',
-];
 
 const getStatusDisplay = (status: string, debt?: number, advance?: number) => {
   return {

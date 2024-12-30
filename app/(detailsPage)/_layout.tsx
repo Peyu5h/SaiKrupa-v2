@@ -43,7 +43,7 @@ export default function MaterialTopTabsLayout() {
   }), [getColor]);
 
   const screenOptions: MaterialTopTabNavigationOptions = {
-    tabBarActiveTintColor: colors.primary,
+    tabBarActiveTintColor: colors.secondaryForeground,
     tabBarInactiveTintColor: colors.mutedForeground,
     tabBarLabelStyle: {
       fontSize: 14,

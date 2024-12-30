@@ -1,4 +1,4 @@
-import { View, ScrollView, useWindowDimensions, Pressable } from 'react-native';
+import { View, ScrollView, useWindowDimensions, Pressable, ActivityIndicator } from 'react-native';
 import { ThemeToggle } from '~/components/ThemeToggle';
 import { Button } from '~/components/ui/button';
 import { Text } from '~/components/ui/text';
@@ -8,7 +8,7 @@ import { useState } from 'react';
 import * as Yup from 'yup';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import {Ionicons} from '@expo/vector-icons';
-
+import { useThemeColors } from '~/lib/utils';
 import { Pencil, Check, X, Plus } from 'lucide-react-native';
 import {
   Dialog,
@@ -19,90 +19,137 @@ import {
   DialogDescription,
   DialogClose,
 } from '~/components/ui/dialog';
-import { Formik, useFormik } from 'formik';
-import { useRouter } from 'expo-router';
-import { cn,  useThemeColors } from '~/lib/utils';
+import { useFormik } from 'formik';
 
-const DEFAULT_PLANS = [
-  { id: 1, monthlyAmount: 310, profitPerCustomer: 120 },
-  { id: 2, monthlyAmount: 390, profitPerCustomer: 150 },
-  { id: 3, monthlyAmount: 500, profitPerCustomer: 200 },
-];
+import { cn } from '~/lib/utils';
+import api from '~/lib/api';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+
+interface Plan {
+  id: string;
+  amount: number;
+  profit: number;
+}
 
 export default function SettingsScreen() {
   const { width } = useWindowDimensions();
   const { toast } = useToast();
   const [isCreateUserOpen, setIsCreateUserOpen] = useState(false);
-  const [editingPlan, setEditingPlan] = useState<number | null>(null);
-  const [plans, setPlans] = useState(DEFAULT_PLANS);
+  const [editingPlan, setEditingPlan] = useState<string | null>(null);
   const [editValues, setEditValues] = useState({
-    monthlyAmount: '',
-    profitPerCustomer: '',
+    amount: '',
+    profit: '',
   });
-  const router = useRouter();
-  const [defaultName, setDefaultName] = useState('Vijay');
-  const [isEditingName, setIsEditingName] = useState(false);
-  const { getColor } = useThemeColors();
+  const queryClient = useQueryClient();
+
+  const { data: plansData, isLoading } = useQuery({
+    queryKey: ['plans'],
+    queryFn: async () => {
+      const response = await api.get('/api/bills/plans');
+      if (!response.status) {
+        throw new Error(response.message);
+      }
+      return response.data as Plan[];
+    }
+  });
 
   const columnWidths = [width * 0.33, width * 0.33, width * 0.33];
 
-  const handleEdit = (plan: (typeof DEFAULT_PLANS)[0]) => {
+  const handleEdit = (plan: Plan) => {
     setEditingPlan(plan.id);
     setEditValues({
-      monthlyAmount: plan.monthlyAmount.toString(),
-      profitPerCustomer: plan.profitPerCustomer.toString(),
+      amount: plan.amount.toString(),
+      profit: plan.profit.toString(),
     });
   };
 
-  const handleSave = (planId: number) => {
-    const newPlans = plans.map((plan) => {
-      if (plan.id === planId) {
-        return {
-          ...plan,
-          monthlyAmount: parseInt(editValues.monthlyAmount),
-          profitPerCustomer: parseInt(editValues.profitPerCustomer),
-        };
+  const handleSave = async (planId: string) => {
+    try {
+      const response = await api.put(`/api/bills/plans/${planId}`, {
+        amount: parseInt(editValues.amount),
+        profit: parseInt(editValues.profit),
+      });
+
+      if (response.status) {
+        setEditingPlan(null);
+        queryClient.invalidateQueries({ queryKey: ['plans'] });
+        toast({
+          title: 'Plan Updated',
+          description: 'Successfully updated plan values',
+        });
+      } else {
+        toast({
+          title: 'Error',
+          description: response.message || 'Failed to update plan',
+          variant: 'destructive',
+        });
       }
-      return plan;
-    });
-
-    setPlans(newPlans);
-    setEditingPlan(null);
-    toast({
-      title: 'Plan Updated',
-      description: 'Successfully updated plan values',
-    });
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'Something went wrong while updating the plan',
+        variant: 'destructive',
+      });
+    }
   };
 
-  const handleCreateUser = (values: any) => {
-    // Handle form submission
+  const handleCreateUser = async (values: any) => {
+    try {
+      const response = await api.post('/api/customer/create', values);
+      if (response.status) {
+        toast({
+          title: 'User Created',
+          description: 'Successfully created user',
+        });
+        formik.resetForm();
+      }
+      else {
+        toast({
+          title: 'Error',
+          description: response.message,
+          variant: 'destructive',
+        });
+      }
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'Something went wrong',
+        variant: 'destructive',
+      });
+    }finally {
+      setIsCreateUserOpen(false);
+    }
   };
   const [isUpdateUserOpen, setIsUpdateUserOpen] = useState(false);
   const [isDeleteUserOpen, setIsDeleteUserOpen] = useState(false);
 
-  // const userValidationSchema = Yup.object().shape({
-  //   name: Yup.string().min(2, 'Name too short').required('Name is required'),
-  //   address: Yup.string().min(5, 'Address too short').required('Address is required'),
-  //   mobileNumber: Yup.string()
-  //     .matches(/^\d{10}$/, 'Phone number must be 10 digits')
-  //     .required('Mobile number is required'),
-  //   stbNumber: Yup.string().min(4, 'STB number too short').required('STB number is required'),
-  //   customerId: Yup.string().min(4, 'Customer ID too short').required('Customer ID is required'),
-  // });
+  const userValidationSchema = Yup.object().shape({
+    name: Yup.string().min(2, 'Name too short').required('Name is required'),
+    address: Yup.string().min(5, 'Address too short').required('Address is required'),
+    phone: Yup.string()
+      .matches(/^\d{10}$/, 'Phone number must be 10 digits')
+      .required('Mobile number is required'),
+    customerId: Yup.string().min(4, 'Customer ID too short').required('Customer ID is required'),
+    stbId: Yup.string().min(4, 'STB ID too short').required('STB ID is required'),
+  });
+
+  const { getColor } = useThemeColors();
 
   const formik = useFormik({
     initialValues: {
       name: '',
       address: '',
-      mobileNumber: '',
-      stbNumber: '',
+      phone: '',
+      stbId: '',
       customerId: '',
     },
-    // validationSchema: userValidationSchema,
+    validationSchema: userValidationSchema,
     onSubmit: handleCreateUser,
   });
 
   const { handleSubmit } = formik;
+  const [defaultName, setDefaultName] = useState('Vijay');
+  const [isEditingName, setIsEditingName] = useState(false);
 
   return (
     <ScrollView className="flex-1 bg-background">
@@ -164,54 +211,60 @@ export default function SettingsScreen() {
               </View>
             </View>
 
-            {plans.map((plan, index) => (
-              <View
-                key={plan.id}
-                className={`flex-row ${index !== plans.length - 1 ? 'border-b border-border' : ''}`}
-              >
-                <View style={{ width: columnWidths[0] }} className="border-r border-border p-4">
-                  {editingPlan === plan.id ? (
-                    <Input
-                      value={editValues.monthlyAmount}
-                      onChangeText={(text) =>
-                        setEditValues((prev) => ({ ...prev, monthlyAmount: text }))
-                      }
-                      keyboardType="numeric"
-                      className="h-8"
-                    />
-                  ) : (
-                    <Text className="text-center">₹{plan.monthlyAmount}</Text>
-                  )}
-                </View>
-                <View style={{ width: columnWidths[1] }} className="border-r border-border p-4">
-                  {editingPlan === plan.id ? (
-                    <Input
-                      value={editValues.profitPerCustomer}
-                      onChangeText={(text) =>
-                        setEditValues((prev) => ({ ...prev, profitPerCustomer: text }))
-                      }
-                      keyboardType="numeric"
-                      className="h-8"
-                    />
-                  ) : (
-                    <Text className="text-center">₹{plan.profitPerCustomer}</Text>
-                  )}
-                </View>
-                <View style={{ width: columnWidths[2] }} className="p-4">
-                  <View className="items-center">
+            {isLoading ? (
+              <View className="p-4">
+                <ActivityIndicator />
+              </View>
+            ) : (
+              plansData?.map((plan, index) => (
+                <View
+                  key={plan.id}
+                  className={`flex-row ${index !== (plansData?.length || 0) - 1 ? 'border-b border-border' : ''}`}
+                >
+                  <View style={{ width: columnWidths[0] }} className="border-r border-border p-4">
                     {editingPlan === plan.id ? (
-                      <Button size="xl" variant="outline" onPress={() => handleSave(plan.id)}>
-                        <Check size={20} className="text-primary" />
-                      </Button>
+                      <Input
+                        value={editValues.amount}
+                        onChangeText={(text) =>
+                          setEditValues((prev) => ({ ...prev, amount: text }))
+                        }
+                        keyboardType="numeric"
+                        className="h-8"
+                      />
                     ) : (
-                      <Button size="sm" variant="ghost" onPress={() => handleEdit(plan)}>
-                        <Pencil color="gray" size={16} />
-                      </Button>
+                      <Text className="text-center">₹{plan.amount}</Text>
                     )}
                   </View>
+                  <View style={{ width: columnWidths[1] }} className="border-r border-border p-4">
+                    {editingPlan === plan.id ? (
+                      <Input
+                        value={editValues.profit}
+                        onChangeText={(text) =>
+                          setEditValues((prev) => ({ ...prev, profit: text }))
+                        }
+                        keyboardType="numeric"
+                        className="h-8"
+                      />
+                    ) : (
+                      <Text className="text-center">₹{plan.profit}</Text>
+                    )}
+                  </View>
+                  <View style={{ width: columnWidths[2] }} className="p-4">
+                    <View className="items-center">
+                      {editingPlan === plan.id ? (
+                        <Button size="xl" variant="outline" onPress={() => handleSave(plan.id)}>
+                          <Check size={20} className="text-primary" />
+                        </Button>
+                      ) : (
+                        <Button size="sm" variant="ghost" onPress={() => handleEdit(plan)}>
+                          <Pencil color="gray" size={16} />
+                        </Button>
+                      )}
+                    </View>
+                  </View>
                 </View>
-              </View>
-            ))}
+              ))
+            )}
           </View>
         </ScrollView>
 
@@ -220,7 +273,7 @@ export default function SettingsScreen() {
             <Dialog open={isUpdateUserOpen} onOpenChange={setIsUpdateUserOpen}>
               <DialogTrigger asChild>
                 <Pressable
-                  className="flex-1 bg-card p-4 rounded-2xl border border-border flex-row items-center justify-center"
+                  className="flex-1  bg-primary/10 p-4 rounded-2xl border border-border flex-row items-center justify-center"
                   style={{ minWidth: '48%' }}
                   android_ripple={{
                     color: getColor('primary'),
@@ -263,7 +316,7 @@ export default function SettingsScreen() {
             <Dialog open={isDeleteUserOpen} onOpenChange={setIsDeleteUserOpen}>
               <DialogTrigger asChild>
                 <Pressable
-                  className="flex-1 bg-card p-4 rounded-2xl border border-border flex-row items-center justify-center"
+                  className="flex-1 bg-destructive/10 p-4 rounded-2xl border border-border flex-row items-center justify-center"
                   style={{ minWidth: '48%' }}
                   android_ripple={{
                     color: getColor('destructive'),
@@ -306,7 +359,13 @@ export default function SettingsScreen() {
           <Dialog open={isCreateUserOpen} onOpenChange={setIsCreateUserOpen}>
           <DialogTrigger asChild>
             <Pressable
-              className="w-full bg-primary/10 p-4 rounded-2xl border border-primary-foreground/20 flex-row items-center justify-center mb-24"
+            android_ripple={{
+              color: getColor('primary'),
+              borderless: false,
+              foreground: true,
+              radius: 200,
+            }}
+              className="w-full mt-2 bg-primary/10 p-4 rounded-2xl border border-border  flex-row items-center justify-center mb-24"
 
             >
               <Plus size={20} color={getColor('primary')} style={{ marginRight: 8 }} />
@@ -352,14 +411,14 @@ export default function SettingsScreen() {
                 <View style={{ flex: 1 }}>
                   <Text className="text-sm font-medium mb-2">Mobile Number</Text>
                   <Input
-                    value={formik.values.mobileNumber}
-                    onChangeText={formik.handleChange('mobileNumber')}
+                    value={formik.values.phone}
+                    onChangeText={formik.handleChange('phone')}
                     placeholder="Enter mobile number"
                     keyboardType="numeric"
                   />
-                  {formik.errors.mobileNumber && formik.touched.mobileNumber && (
+                  {formik.errors.phone && formik.touched.phone && (
                     <Text className="text-destructive text-xs mt-1">
-                      {formik.errors.mobileNumber}
+                      {formik.errors.phone}
                     </Text>
                   )}
                 </View>
@@ -367,12 +426,12 @@ export default function SettingsScreen() {
                 <View style={{ flex: 1 }}>
                   <Text className="text-sm font-medium mb-2">STB Number</Text>
                   <Input
-                    value={formik.values.stbNumber}
-                    onChangeText={formik.handleChange('stbNumber')}
+                    value={formik.values.stbId}
+                    onChangeText={formik.handleChange('stbId')}
                     placeholder="Enter STB number"
                   />
-                  {formik.errors.stbNumber && formik.touched.stbNumber && (
-                    <Text className="text-destructive text-xs mt-1">{formik.errors.stbNumber}</Text>
+                  {formik.errors.stbId && formik.touched.stbId && (
+                    <Text className="text-destructive text-xs mt-1">{formik.errors.stbId}</Text>
                   )}
                 </View>
               </View>

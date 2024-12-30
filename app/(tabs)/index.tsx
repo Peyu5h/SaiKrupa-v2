@@ -134,7 +134,6 @@ export default function Screen() {
   const EmptyView = () => (
     <View className="flex-1 justify-center items-center">
       <View className="bg-card p-6 rounded-xl border border-border items-center">
-        <UserX size={48} className="text-muted-foreground mb-4" />
         <Text className="text-xl font-medium text-foreground">No customers found</Text>
         <Text className="text-muted-foreground mt-2">Try adjusting your search criteria</Text>
       </View>

@@ -15,6 +15,7 @@ model Customer {
   stdId        String?
   customerId   String        @unique
   registerAt   String?    
+  deletedAt    String?
   payments     Payment[]
   transactions Transaction[]
 }
@@ -61,4 +62,12 @@ model Transaction {
   type           String
   note           String?
   createdAt      DateTime      @default(now())
+}
+
+model Plan {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  amount       Int
+  profit       Int
+  
+  @@map("plans")
 }

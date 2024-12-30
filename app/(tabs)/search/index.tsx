@@ -21,13 +21,6 @@ import { ChevronDown, UserX } from 'lucide-react-native';
 import { Customer } from '~/backend/src/utils/types';
 import CustomerCard from '~/components/CustomerCard';
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: 0,
-    },
-  },
-});
 
 export default function SearchScreen() {
   const { getColor } = useThemeColors();

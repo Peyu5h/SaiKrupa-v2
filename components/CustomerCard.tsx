@@ -7,22 +7,9 @@ import { cn } from '~/lib/utils';
 import { Minus, Plus } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 import { useColorScheme } from '~/lib/useColorScheme';
-import { Payment } from '~/backend/src/utils/types';
+import { CustomerCardProps, Payment } from '~/backend/src/utils/types';
 import { useThemeColors } from '~/lib/utils';
 
-interface CustomerCardProps {
-  id: string;
-  name: string;
-  address: string;
-  stb: string;
-  date: string;
-  amount: number;
-  status: 'Paid' | 'Partially Paid' | 'Advance Paid' | 'Unpaid' | 'Off';
-  debt: number;
-  advance: number;
-  isPending?: boolean;
-  payments: Payment[];
-}
 
 const truncateText = (text: string, maxLength: number) => {
   return text.length > maxLength ? `${text.substring(0, maxLength)}...` : text;

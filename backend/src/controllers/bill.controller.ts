@@ -27,8 +27,8 @@ export const createBill = async (req: Request, res: Response): Promise<void> => 
     const numberOfMonths = finalEndMonth - startMonth + 1;
     const totalMonthlyAmount = monthlyAmount * numberOfMonths;
     const minimumRequiredAmount = monthlyAmount === 310 
-      ? Math.max(200 * numberOfMonths, Math.floor(totalMonthlyAmount * 0.65))
-      : Math.floor(totalMonthlyAmount * 0.95);
+      ? Math.max(100 * numberOfMonths, Math.floor(totalMonthlyAmount * 0.3))
+      : Math.floor(totalMonthlyAmount * 0.3);
 
     if (!isOff && amount < minimumRequiredAmount) {
       res.status(400).json({
@@ -108,7 +108,7 @@ export const createBill = async (req: Request, res: Response): Promise<void> => 
         paymentDate,
         note: req.body.note,
         status: 'Off',
-        advance: availableAdvance, //dont change existing debt/advance
+        advance: availableAdvance,
         debt: existingDebt,
       }));
     } else {
@@ -253,8 +253,7 @@ export const deleteTransaction = async (req: Request, res: Response): Promise<vo
   try {
     const { paymentId } = req.params;
 
-    // First get the payment details to identify which months to reset
-    const payment = await prisma.payment.findUnique({
+  const payment = await prisma.payment.findUnique({
       where: { id: paymentId },
       include: {
         months: true,
@@ -269,16 +268,13 @@ export const deleteTransaction = async (req: Request, res: Response): Promise<vo
       return;
     }
 
-    // Use transaction to ensure all operations complete or none do
     await prisma.$transaction(async (tx) => {
-      // Delete all month payments first (due to foreign key constraints)
       await tx.monthPayment.deleteMany({
         where: {
           paymentId: paymentId,
         },
       });
 
-      // Delete the payment record
       await tx.payment.delete({
         where: {
           id: paymentId,
@@ -295,6 +291,72 @@ export const deleteTransaction = async (req: Request, res: Response): Promise<vo
     res.status(500).json({
       status: false,
       message: 'Error deleting transaction',
+      error,
+    });
+  }
+};
+
+export const createPlan = async (req: Request, res: Response): Promise<void> => {
+  const { amount, profit } = req.body;
+  const plan = await prisma.plan.create({ data: { amount, profit } });
+  res.status(201).json({
+    status: true,
+    message: 'Plan created successfully',
+    data: plan,
+  });
+};
+
+export const getPlans = async (_req: Request, res: Response): Promise<void> => {
+  const plans = await prisma.plan.findMany();
+  res.status(200).json({
+    status: true,
+    message: 'Plans fetched successfully',
+    data: plans,
+  });
+};
+
+export const updatePlan = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { planId } = req.params;
+    const { amount, profit } = req.body;
+
+    const updatedPlan = await prisma.plan.update({
+      where: { id: planId },
+      data: { amount, profit },
+    });
+
+    res.status(200).json({
+      status: true,
+      message: 'Plan updated successfully',
+      data: updatedPlan,
+    });
+  } catch (error) {
+    console.error('Error updating plan:', error);
+    res.status(500).json({
+      status: false,
+      message: 'Error updating plan',
+      error,
+    });
+  }
+};
+
+export const deletePlan = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { planId } = req.params;
+
+    await prisma.plan.delete({
+      where: { id: planId },
+    });
+
+    res.status(200).json({
+      status: true,
+      message: 'Plan deleted successfully',
+    });
+  } catch (error) {
+    console.error('Error deleting plan:', error);
+    res.status(500).json({
+      status: false,
+      message: 'Error deleting plan',
       error,
     });
   }
