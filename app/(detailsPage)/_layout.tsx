@@ -93,7 +93,7 @@ export default function MaterialTopTabsLayout() {
 
  
   return (
-    <View className="flex-1 mt-10 bg-background">
+    <View className="flex-1 mt-12 bg-background">
       <View className="flex-row items-center p-4 border-b border-border/50">
         <Pressable
           className="mr-6 bg-background border border-border rounded-full p-3"
@@ -105,7 +105,7 @@ export default function MaterialTopTabsLayout() {
           size={24} />
         </Pressable>
         <View className="flex-1 gap-0.5">
-          <Text className="text-lg font-medium">
+          <Text className="text-xl font-medium">
             {data?.customer?.name || <Skeleton className="w-24 h-6 mb-1" />}
           </Text>
           <Text className="text-muted-foreground">

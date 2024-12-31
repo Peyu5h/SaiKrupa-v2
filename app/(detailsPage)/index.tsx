@@ -123,19 +123,18 @@ const DetailsPage = () => {
 
   const handleDelete = async () => {
     try {
-      const response: any = await api.delete(`api/customer/${customer?.id}`);
+      const response = await api.delete(`api/customer/${customer?.id}`);
       setIsDeleteOpen(false);
 
-      if (response.data?.status) {
+      if (response.status) {
         toast({
           title: 'User Deleted',
           description: `Successfully deleted user ${customer?.name}`,
         });
         queryClient.invalidateQueries({ queryKey: ['customers'] });
-        queryClient.invalidateQueries({ queryKey: ['customerDetails', customer?.id] });
         router.push('/(tabs)');
       } else {
-        throw new Error(response.data?.message || 'Failed to delete user');
+        throw new Error('Failed to delete user');
       }
     } catch (error) {
       setIsDeleteOpen(false);

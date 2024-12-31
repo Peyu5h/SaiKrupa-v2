@@ -205,16 +205,9 @@ export default function Form() {
 
   return (
     <ScrollView className="flex-1 p-4 bg-background">
-      <View className="flex-row items-center  justify-between mb-6 p-4 bg-card/50 rounded-2xl border border-border">
-        <View>
-          <Text className="font-medium text-lg">Service Paused</Text>
-          <Text className="text-muted-foreground text-sm">Turn on if service was paused</Text>
-        </View>
-        <Switch checked={isOff} onCheckedChange={setIsOff} />
-      </View>
 
       <View className="space-y-4 mb-6">
-        <View className="flex-row items-center justify-between mb-4 border-b border-border pb-4">
+        <View className="flex-row items-center justify-between my-4 border-b border-border pb-4">
           <Text className="text-base font-medium">Multiple Months</Text>
           <Switch checked={isMultiMonth} onCheckedChange={setIsMultiMonth} disabled={isOff} />
         </View>
@@ -393,7 +386,7 @@ export default function Form() {
       </View>
 
       <Button
-        className="mb-12 bg-green-600"
+        className="mb-4 bg-green-600"
         size="lg"
         onPress={handleSubmit}
         disabled={!customerId || !isFormValid() || createBillMutation.isPending || isMonthDisabled(startMonth)}
@@ -406,6 +399,14 @@ export default function Form() {
               : 'Create entry'}
         </Text>
       </Button>
+
+      <View className="flex-row items-center  justify-between my-8 mb-12 p-4 bg-card/50 rounded-2xl border border-border">
+        <View>
+          <Text className="font-medium text-lg">Service Paused</Text>
+          <Text className="text-muted-foreground text-sm">Turn on if service was paused</Text>
+        </View>
+        <Switch checked={isOff} onCheckedChange={setIsOff} />
+      </View>
     </ScrollView>
   );
 }

@@ -386,7 +386,8 @@ export default function SettingsScreen() {
                 <View className="w-full">
                   <Input
                     value={formik.values.name}
-                    onChangeText={formik.handleChange('name')}
+                    onChangeText={(text) => formik.setFieldValue('name', text)}
+                    onBlur={() => formik.handleBlur('name')}
                     placeholder="Enter name"
                   />
                 </View>
@@ -399,7 +400,8 @@ export default function SettingsScreen() {
                 <Text className="text-sm font-medium mb-2">Address</Text>
                 <Input
                   value={formik.values.address}
-                  onChangeText={formik.handleChange('address')}
+                  onChangeText={(text) => formik.setFieldValue('address', text)}
+                  onBlur={() => formik.handleBlur('address')}
                   placeholder="Enter address"
                 />
                 {formik.errors.address && formik.touched.address && (
@@ -412,7 +414,8 @@ export default function SettingsScreen() {
                   <Text className="text-sm font-medium mb-2">Mobile Number</Text>
                   <Input
                     value={formik.values.phone}
-                    onChangeText={formik.handleChange('phone')}
+                    onChangeText={(text) => formik.setFieldValue('phone', text)}
+                    onBlur={() => formik.handleBlur('phone')}
                     placeholder="Enter mobile number"
                     keyboardType="numeric"
                   />
@@ -427,7 +430,8 @@ export default function SettingsScreen() {
                   <Text className="text-sm font-medium mb-2">STB Number</Text>
                   <Input
                     value={formik.values.stbId}
-                    onChangeText={formik.handleChange('stbId')}
+                    onChangeText={(text) => formik.setFieldValue('stbId', text)}
+                    onBlur={() => formik.handleBlur('stbId')}
                     placeholder="Enter STB number"
                   />
                   {formik.errors.stbId && formik.touched.stbId && (
@@ -440,7 +444,8 @@ export default function SettingsScreen() {
                 <Text className="text-sm font-medium mb-2">Customer ID</Text>
                 <Input
                   value={formik.values.customerId}
-                  onChangeText={formik.handleChange('customerId')}
+                  onChangeText={(text) => formik.setFieldValue('customerId', text)}
+                  onBlur={() => formik.handleBlur('customerId')}
                   placeholder="Enter customer ID"
                 />
                 {formik.errors.customerId && formik.touched.customerId && (

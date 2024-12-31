@@ -25,7 +25,7 @@ interface ApiResponse<T = unknown> {
   data?: T;
 }
 
-const apiUrl = 'https://saikrupa-v2.onrender.com/';
+const apiUrl = 'https://saikrupa.peyu5h.tech/';
 console.log(apiUrl);
 
 const createInstance = () => {
