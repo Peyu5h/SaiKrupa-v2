@@ -3,7 +3,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { Text } from '~/components/ui/text';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { ChevronDown, ChevronLeft } from 'lucide-react-native';
-import { cn } from '~/lib/utils';
+import { cn, formatDateDMY } from '~/lib/utils';
 import * as Clipboard from 'expo-clipboard';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { HistoryIcon } from '~/components/icons';
@@ -33,7 +33,7 @@ import { Input } from '~/components/ui/input';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { useToast } from '~/components/ui/toast';
-import {  useQueryClient } from '@tanstack/react-query';
+import { useQueryClient } from '@tanstack/react-query';
 import api from '~/lib/api';
 import { Skeleton } from '~/components/ui/skeleton';
 import { NAV_THEME } from '~/lib/constants';
@@ -48,8 +48,6 @@ const validationSchema = Yup.object().shape({
     .required('Mobile number is required'),
   stbNumber: Yup.string().min(4, 'STB number too short').required('STB number is required'),
 });
-
-
 
 const DetailsPage = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -84,17 +82,17 @@ const DetailsPage = () => {
 
   const availableYears = useMemo(() => {
     if (!customer?.payments?.length) return [new Date().getFullYear().toString()];
-    
-    const years = [...new Set(customer.payments.map(payment => payment.year))];
-    return years.sort((a, b) => b - a).map(year => year.toString()); 
+
+    const years = [...new Set(customer.payments.map((payment) => payment.year))];
+    return years.sort((a, b) => b - a).map((year) => year.toString());
   }, [customer]);
 
   const currentYear = new Date().getFullYear().toString();
   const [selectedYear, setSelectedYear] = useState(() => {
     if (availableYears.includes(currentYear)) {
       return availableYears.indexOf(currentYear);
-      }
-      return 0;
+    }
+    return 0;
   });
 
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
@@ -233,7 +231,7 @@ const DetailsPage = () => {
               <View className="flex-1 bg-card p-4 rounded-2xl border border-border">
                 <Text className="text-muted-foreground text-sm mb-1">Created On</Text>
                 <Text className="text-lg text-foreground/80 font-semibold">
-                  {customer?.registerAt}
+                  {customer?.registerAt ? formatDateDMY(customer?.registerAt) : 'N/A'}
                 </Text>
               </View>
               <View className="flex-1 bg-card p-4 rounded-2xl border border-border">
@@ -296,7 +294,9 @@ const DetailsPage = () => {
                       <Text className="text-lg">Update User</Text>
                     </DialogTitle>
                     <DialogDescription>
-                      <Text className="">Make changes to user details here. Click update if done.</Text>
+                      <Text className="">
+                        Make changes to user details here. Click update if done.
+                      </Text>
                     </DialogDescription>
                   </DialogHeader>
                   <Formik

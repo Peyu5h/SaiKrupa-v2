@@ -1,6 +1,6 @@
 import { View, Pressable } from 'react-native';
 import React from 'react';
-  import { useThemeColors } from '~/lib/utils';
+import { useThemeColors } from '~/lib/utils';
 import { Ionicons } from '@expo/vector-icons';
 import { Text } from '~/components/ui/text';
 import {
@@ -13,9 +13,7 @@ import {
   DialogTrigger,
 } from '~/components/ui/dialog';
 import { Button } from './ui/button';
-import { TransactionCardProps } from '~/backend/src/utils/types';
-
-
+import { TransactionCardProps } from '~/lib/utils';
 
 const AllTransactionsCard = ({
   name,
@@ -31,7 +29,6 @@ const AllTransactionsCard = ({
     onDelete?.();
   };
   const { getColor } = useThemeColors();
-
 
   return (
     <View className="mb-4 w-full bg-secondary/50 p-4 rounded-2xl border border-border">

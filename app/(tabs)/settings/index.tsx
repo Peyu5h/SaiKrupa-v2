@@ -7,7 +7,7 @@ import { useToast } from '~/components/ui/toast';
 import { useState } from 'react';
 import * as Yup from 'yup';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import {Ionicons} from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 import { useThemeColors } from '~/lib/utils';
 import { Pencil, Check, X, Plus } from 'lucide-react-native';
 import {
@@ -50,7 +50,7 @@ export default function SettingsScreen() {
         throw new Error(response.message);
       }
       return response.data as Plan[];
-    }
+    },
   });
 
   const columnWidths = [width * 0.33, width * 0.33, width * 0.33];
@@ -102,8 +102,7 @@ export default function SettingsScreen() {
           description: 'Successfully created user',
         });
         formik.resetForm();
-      }
-      else {
+      } else {
         toast({
           title: 'Error',
           description: response.message,
@@ -116,7 +115,7 @@ export default function SettingsScreen() {
         description: 'Something went wrong',
         variant: 'destructive',
       });
-    }finally {
+    } finally {
       setIsCreateUserOpen(false);
     }
   };
@@ -145,6 +144,8 @@ export default function SettingsScreen() {
     },
     validationSchema: userValidationSchema,
     onSubmit: handleCreateUser,
+    validateOnChange: false,
+    validateOnBlur: true,
   });
 
   const { handleSubmit } = formik;
@@ -163,15 +164,15 @@ export default function SettingsScreen() {
 
         <View className="">
           <Text className="text-sm font-medium mb-2">Default User</Text>
-          <View className='flex-1 flex-row items-center justify-between gap-2'>
+          <View className="flex-1 flex-row items-center justify-between gap-2">
             <Input
               value={defaultName}
-              className='flex-1'
+              className="flex-1"
               onChangeText={(text) => setDefaultName(text)}
               editable={isEditingName}
             />
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               size="xl"
               className={cn(isEditingName && 'bg-green-600')}
               onPress={() => {
@@ -192,8 +193,6 @@ export default function SettingsScreen() {
             </Button>
           </View>
         </View>
-
-      
 
         <Text className="text-lg font-semibold mb-4 mt-8">Change Plans</Text>
 
@@ -219,7 +218,9 @@ export default function SettingsScreen() {
               plansData?.map((plan, index) => (
                 <View
                   key={plan.id}
-                  className={`flex-row ${index !== (plansData?.length || 0) - 1 ? 'border-b border-border' : ''}`}
+                  className={`flex-row ${
+                    index !== (plansData?.length || 0) - 1 ? 'border-b border-border' : ''
+                  }`}
                 >
                   <View style={{ width: columnWidths[0] }} className="border-r border-border p-4">
                     {editingPlan === plan.id ? (
@@ -353,20 +354,19 @@ export default function SettingsScreen() {
                 </View>
               </DialogContent>
             </Dialog>
-      </View>
           </View>
+        </View>
 
-          <Dialog open={isCreateUserOpen} onOpenChange={setIsCreateUserOpen}>
+        <Dialog open={isCreateUserOpen} onOpenChange={setIsCreateUserOpen}>
           <DialogTrigger asChild>
             <Pressable
-            android_ripple={{
-              color: getColor('primary'),
-              borderless: false,
-              foreground: true,
-              radius: 200,
-            }}
+              android_ripple={{
+                color: getColor('primary'),
+                borderless: false,
+                foreground: true,
+                radius: 200,
+              }}
               className="w-full mt-2 bg-primary/10 p-4 rounded-2xl border border-border  flex-row items-center justify-center mb-24"
-
             >
               <Plus size={20} color={getColor('primary')} style={{ marginRight: 8 }} />
               <Text className="text-primary font-medium">Add new user</Text>
@@ -386,7 +386,7 @@ export default function SettingsScreen() {
                 <View className="w-full">
                   <Input
                     value={formik.values.name}
-                    onChangeText={(text) => formik.setFieldValue('name', text)}
+                    onChangeText={(text) => formik.setFieldValue('name', text, false)}
                     onBlur={() => formik.handleBlur('name')}
                     placeholder="Enter name"
                   />
@@ -400,7 +400,7 @@ export default function SettingsScreen() {
                 <Text className="text-sm font-medium mb-2">Address</Text>
                 <Input
                   value={formik.values.address}
-                  onChangeText={(text) => formik.setFieldValue('address', text)}
+                  onChangeText={(text) => formik.setFieldValue('address', text, false)}
                   onBlur={() => formik.handleBlur('address')}
                   placeholder="Enter address"
                 />
@@ -414,15 +414,13 @@ export default function SettingsScreen() {
                   <Text className="text-sm font-medium mb-2">Mobile Number</Text>
                   <Input
                     value={formik.values.phone}
-                    onChangeText={(text) => formik.setFieldValue('phone', text)}
+                    onChangeText={(text) => formik.setFieldValue('phone', text, false)}
                     onBlur={() => formik.handleBlur('phone')}
                     placeholder="Enter mobile number"
                     keyboardType="numeric"
                   />
                   {formik.errors.phone && formik.touched.phone && (
-                    <Text className="text-destructive text-xs mt-1">
-                      {formik.errors.phone}
-                    </Text>
+                    <Text className="text-destructive text-xs mt-1">{formik.errors.phone}</Text>
                   )}
                 </View>
 
@@ -430,7 +428,7 @@ export default function SettingsScreen() {
                   <Text className="text-sm font-medium mb-2">STB Number</Text>
                   <Input
                     value={formik.values.stbId}
-                    onChangeText={(text) => formik.setFieldValue('stbId', text)}
+                    onChangeText={(text) => formik.setFieldValue('stbId', text, false)}
                     onBlur={() => formik.handleBlur('stbId')}
                     placeholder="Enter STB number"
                   />
@@ -444,7 +442,7 @@ export default function SettingsScreen() {
                 <Text className="text-sm font-medium mb-2">Customer ID</Text>
                 <Input
                   value={formik.values.customerId}
-                  onChangeText={(text) => formik.setFieldValue('customerId', text)}
+                  onChangeText={(text) => formik.setFieldValue('customerId', text, false)}
                   onBlur={() => formik.handleBlur('customerId')}
                   placeholder="Enter customer ID"
                 />
@@ -466,7 +464,7 @@ export default function SettingsScreen() {
             </View>
           </DialogContent>
         </Dialog>
-        </View>
+      </View>
     </ScrollView>
   );
 }

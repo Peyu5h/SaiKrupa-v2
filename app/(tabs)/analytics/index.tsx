@@ -16,7 +16,7 @@ import {
   DropdownMenuTrigger,
 } from '~/components/ui/dropdown-menu';
 import { cn, useThemeColors } from '~/lib/utils';
-import { AnalyticsResponse, MONTHS } from '~/backend/src/utils/types';
+import { AnalyticsResponse, MONTHS } from '~/lib/utils';
 import { useToast } from '~/components/ui/toast';
 import { Muted } from '~/components/ui/typography';
 
@@ -66,7 +66,10 @@ const LoadingState = () => (
 
       <View className="flex-row flex-wrap gap-4 mb-6">
         {[1, 2].map((i) => (
-          <View key={i} className="flex-1 min-w-[160px] bg-card p-4 rounded-2xl border border-border">
+          <View
+            key={i}
+            className="flex-1 min-w-[160px] bg-card p-4 rounded-2xl border border-border"
+          >
             <Text className="text-muted-foreground text-sm mb-2">
               {i === 1 ? 'New Customers' : 'Left Customers'}
             </Text>
@@ -77,7 +80,10 @@ const LoadingState = () => (
 
       <View className="flex-row flex-wrap gap-4">
         {[1, 2].map((i) => (
-          <View key={i} className="flex-1 min-w-[160px] bg-card p-4 rounded-2xl border border-border">
+          <View
+            key={i}
+            className="flex-1 min-w-[160px] bg-card p-4 rounded-2xl border border-border"
+          >
             <Text className="text-muted-foreground text-sm mb-2">
               {i === 1 ? 'Total Debt' : 'Total Advance'}
             </Text>
@@ -116,7 +122,7 @@ const AnalyticsScreen = () => {
             title: 'Error',
             description: response.message,
             variant: 'destructive',
-          })
+          });
         }
         return response.data as AnalyticsResponse;
       } catch (error) {
@@ -136,11 +142,9 @@ const AnalyticsScreen = () => {
   if (isLoading) return <LoadingState />;
 
   return (
-    <ScrollView 
+    <ScrollView
       className="flex-1 bg-background"
-      refreshControl={
-        <RefreshControl refreshing={isLoading} onRefresh={refetch} />
-      }
+      refreshControl={<RefreshControl refreshing={isLoading} onRefresh={refetch} />}
     >
       <View className="p-4">
         <View className="mb-6">
@@ -152,16 +156,16 @@ const AnalyticsScreen = () => {
           <View className="flex-1">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button 
+                <Button
                   style={{ height: 54 }}
-                  variant="outline" 
+                  variant="outline"
                   className="w-full justify-between flex-row"
                 >
                   <Text className="text-foreground">{selectedViewType}</Text>
                   <ChevronDown size={18} className="text-foreground" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent 
+              <DropdownMenuContent
                 align="end"
                 insets={{ left: 12, right: 12 }}
                 className="w-64 native:w-72 bg-background"
@@ -191,16 +195,16 @@ const AnalyticsScreen = () => {
             <View className="flex-1">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button 
+                  <Button
                     style={{ height: 54 }}
-                    variant="outline" 
+                    variant="outline"
                     className="w-full justify-between flex-row"
                   >
                     <Text className="text-foreground">{MONTHS[selectedMonth - 1]}</Text>
                     <ChevronDown size={18} className="text-foreground" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent 
+                <DropdownMenuContent
                   align="end"
                   insets={{ left: 12, right: 12 }}
                   className="w-64 native:w-72 bg-background max-h-80"
@@ -231,12 +235,16 @@ const AnalyticsScreen = () => {
           <View className="flex-1">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button style={{ height: 54 }} variant="outline" className="w-full justify-between flex-row">
+                <Button
+                  style={{ height: 54 }}
+                  variant="outline"
+                  className="w-full justify-between flex-row"
+                >
                   <Text className="text-foreground">{selectedYear}</Text>
                   <ChevronDown size={18} className="text-foreground" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent 
+              <DropdownMenuContent
                 align="end"
                 insets={{ left: 12, right: 12 }}
                 className="w-64 native:w-72 bg-background"
@@ -277,9 +285,7 @@ const AnalyticsScreen = () => {
             <View className="flex-row items-center justify-between mb-2">
               <Text className="text-muted-foreground text-lg">Payment Rate</Text>
             </View>
-            <Text className="text-3xl font-bold text-green-600">
-              {data?.paymentRate ?? 0}%
-            </Text>
+            <Text className="text-3xl font-bold text-green-600">{data?.paymentRate ?? 0}%</Text>
           </View>
         </View>
 
@@ -289,9 +295,7 @@ const AnalyticsScreen = () => {
               <Text className="text-muted-foreground">Total Revenue</Text>
               <IndianRupee size={20} color={getColor('primary')} />
             </View>
-            <Text className="text-2xl text-foreground/80 font-bold">
-              ₹{data?.revenue ?? 0}
-            </Text>
+            <Text className="text-2xl text-foreground/80 font-bold">₹{data?.revenue ?? 0}</Text>
           </View>
 
           <View className="w-full bg-card p-4 rounded-2xl border border-border">
@@ -339,9 +343,7 @@ const AnalyticsScreen = () => {
               <Text className="text-muted-foreground">Total Debt</Text>
               <TrendingUp size={20} color={getColor('destructive')} />
             </View>
-            <Text className="text-2xl font-bold text-destructive">
-              ₹{data?.totalDebt ?? 0}
-            </Text>
+            <Text className="text-2xl font-bold text-destructive">₹{data?.totalDebt ?? 0}</Text>
           </View>
 
           <View className="flex-1 min-w-[160px] bg-card p-4 rounded-2xl border border-border">
@@ -349,9 +351,7 @@ const AnalyticsScreen = () => {
               <Text className="text-muted-foreground">Total Advance</Text>
               <Wallet size={20} color="green" />
             </View>
-            <Text className="text-2xl font-bold text-green-600">
-              ₹{data?.totalAdvance ?? 0}
-            </Text>
+            <Text className="text-2xl font-bold text-green-600">₹{data?.totalAdvance ?? 0}</Text>
           </View>
         </View>
       </View>
@@ -360,4 +360,3 @@ const AnalyticsScreen = () => {
 };
 
 export default AnalyticsScreen;
-

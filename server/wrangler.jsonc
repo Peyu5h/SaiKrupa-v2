@@ -1,0 +1,36 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "saikrupa",
+  "main": "src/index.ts",
+  "compatibility_date": "2025-05-27",
+  "compatibility_flags": ["nodejs_compat"],
+
+  // "kv_namespaces": [
+  //   {
+  //     "binding": "MY_KV_NAMESPACE",
+  //     "id": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+  //   }
+  // ],
+  // "r2_buckets": [
+  //   {
+  //     "binding": "MY_BUCKET",
+  //     "bucket_name": "my-bucket"
+  //   }
+  // ],
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "saikrupa-d1",
+      "database_id": "96309229-a669-41de-865c-b599f0cbc303",
+      "migrations_dir": "drizzle/migrations",
+    },
+  ],
+
+  // "ai": {
+  //   "binding": "AI"
+  // },
+  // "observability": {
+  //   "enabled": true,
+  //   "head_sampling_rate": 1
+  // }
+}

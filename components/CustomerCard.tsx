@@ -7,9 +7,8 @@ import { cn } from '~/lib/utils';
 import { Minus, Plus } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 import { useColorScheme } from '~/lib/useColorScheme';
-import { CustomerCardProps, Payment } from '~/backend/src/utils/types';
+import { CustomerCardProps, Payment } from '~/lib/utils';
 import { useThemeColors } from '~/lib/utils';
-
 
 const truncateText = (text: string, maxLength: number) => {
   return text.length > maxLength ? `${text.substring(0, maxLength)}...` : text;

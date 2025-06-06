@@ -23,7 +23,7 @@ import api from '~/lib/api';
 import { useToast } from '~/components/ui/toast';
 import { useRouter } from 'expo-router';
 import { NAV_THEME } from '~/lib/constants';
-import { MONTHS } from '~/backend/src/utils/types';
+import { MONTHS } from '~/lib/utils';
 
 const MONTHLY_AMOUNTS = [310, 400, 600];
 const PAYMENT_METHODS = ['Cash', 'UPI'] as const;
@@ -45,27 +45,27 @@ export default function Form() {
 
   const getNextAvailableMonth = useCallback(() => {
     if (!data?.customer?.payments) return new Date().getMonth();
-    
+
     const currentYear = new Date().getFullYear();
     const paidMonths = data.customer.payments
-      .filter(payment => payment.year === currentYear)
-      .flatMap(payment => payment.months)
-      .map(month => month.month - 1);
-    
+      .filter((payment) => payment.year === currentYear)
+      .flatMap((payment) => payment.months)
+      .map((month) => month.month - 1);
+
     const currentMonth = new Date().getMonth();
     for (let month = currentMonth; month < 12; month++) {
       if (!paidMonths.includes(month)) {
         return month;
       }
     }
-    
+
     for (let month = 0; month < currentMonth; month++) {
       if (!paidMonths.includes(month)) {
         return month;
       }
     }
-    
-    return currentMonth; 
+
+    return currentMonth;
   }, [data]);
 
   const [startMonth, setStartMonth] = useState(getNextAvailableMonth());
@@ -77,17 +77,20 @@ export default function Form() {
 
   const paidMonths = useMemo(() => {
     if (!data?.customer?.payments) return [];
-    
+
     const currentYear = new Date().getFullYear();
     return data.customer.payments
-      .filter(payment => payment.year === currentYear)
-      .flatMap(payment => payment.months)
-      .map(month => month.month - 1);
+      .filter((payment) => payment.year === currentYear)
+      .flatMap((payment) => payment.months)
+      .map((month) => month.month - 1);
   }, [data]);
 
-  const isMonthDisabled = useCallback((monthIndex: number) => {
-    return paidMonths.includes(monthIndex);
-  }, [paidMonths]);
+  const isMonthDisabled = useCallback(
+    (monthIndex: number) => {
+      return paidMonths.includes(monthIndex);
+    },
+    [paidMonths]
+  );
 
   const resetForm = useCallback(() => {
     setIsOff(false);
@@ -102,30 +105,30 @@ export default function Form() {
 
   const isFormValid = useCallback(() => {
     if (isOff) {
-      return true; 
+      return true;
     }
-    
+
     if (!amount || isNaN(parseInt(amount))) {
       return false;
     }
-    
+
     if (isMultiMonth && endMonth < startMonth) {
       return false;
     }
-    
+
     return true;
   }, [isOff, amount, isMultiMonth, startMonth, endMonth]);
 
   const createBillMutation = useMutation({
     mutationFn: async (formData: any) => {
       // try {
-        const response = await api.post('api/bills/create', formData);
-        console.log(response);
+      const response = await api.post('api/bills/create', formData);
+      console.log(response);
 
-        if (!response.status) {
-          throw new Error(response.message);
-        }
-        return response;
+      if (!response.status) {
+        throw new Error(response.message);
+      }
+      return response;
       // } catch (error: any) {
       //   console.log(error);
       //   const errorMessage = error.response?.data?.message || error.message;
@@ -147,10 +150,10 @@ export default function Form() {
     onError: (error: Error) => {
       toast({
         title: 'Error',
-        description: "Payment for this month is already exists or Amount is too less",
+        description: 'Payment for this month is already exists or Amount is too less',
         variant: 'destructive',
       });
-    }
+    },
   });
 
   const handleSubmit = useCallback(() => {
@@ -183,14 +186,24 @@ export default function Form() {
       note: note || undefined,
       customer: {
         connect: {
-          id: customerId
-        }
-      }
+          id: customerId,
+        },
+      },
     };
 
     const formattedData = removeUndefined(formData);
     createBillMutation.mutate(formattedData);
-  }, [customerId, isOff, amount, monthlyAmount, startMonth, endMonth, isMultiMonth, paymentMethod, note]);
+  }, [
+    customerId,
+    isOff,
+    amount,
+    monthlyAmount,
+    startMonth,
+    endMonth,
+    isMultiMonth,
+    paymentMethod,
+    note,
+  ]);
 
   const customer = data?.customer;
   if (!customer) {
@@ -198,14 +211,15 @@ export default function Form() {
   }
 
   if (isLoading) {
-    return <View className="flex-1 items-center justify-center bg-background">
-      <ActivityIndicator size="large" color={NAV_THEME.dark.text} />
-    </View>
+    return (
+      <View className="flex-1 items-center justify-center bg-background">
+        <ActivityIndicator size="large" color={NAV_THEME.dark.text} />
+      </View>
+    );
   }
 
   return (
     <ScrollView className="flex-1 p-4 bg-background">
-
       <View className="space-y-4 mb-6">
         <View className="flex-row items-center justify-between my-4 border-b border-border pb-4">
           <Text className="text-base font-medium">Multiple Months</Text>
@@ -252,7 +266,6 @@ export default function Form() {
                 </ScrollView>
               </DropdownMenuContent>
             </DropdownMenu>
-
           </View>
 
           {isMultiMonth && (
@@ -302,15 +315,12 @@ export default function Form() {
             </View>
           )}
         </View>
-      {startMonth && 
-        isMonthDisabled(startMonth) && (
+        {startMonth && isMonthDisabled(startMonth) && (
           <Text className="text-red-500">This month is already paid</Text>
-        )
-      }
+        )}
       </View>
 
       <View className="mb-6">
-
         <Text className="text-base font-medium mb-2">Monthly Amount</Text>
         <View className="flex-row gap-2">
           {MONTHLY_AMOUNTS.map((value) => (
@@ -389,14 +399,21 @@ export default function Form() {
         className="mb-4 bg-green-600"
         size="lg"
         onPress={handleSubmit}
-        disabled={!customerId || !isFormValid() || createBillMutation.isPending || isMonthDisabled(startMonth)}
+        disabled={
+          !customerId ||
+          !isFormValid() ||
+          createBillMutation.isPending ||
+          isMonthDisabled(startMonth)
+        }
       >
         <Text className="text-primary-foreground font-medium">
-          {createBillMutation.isPending
-            ? <ActivityIndicator size="small" color={NAV_THEME.dark.text} />
-            : isOff 
-              ? 'Mark as Paused' 
-              : 'Create entry'}
+          {createBillMutation.isPending ? (
+            <ActivityIndicator size="small" color={NAV_THEME.dark.text} />
+          ) : isOff ? (
+            'Mark as Paused'
+          ) : (
+            'Create entry'
+          )}
         </Text>
       </Button>
 

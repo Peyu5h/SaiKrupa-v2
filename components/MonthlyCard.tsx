@@ -5,36 +5,46 @@ import { Text } from '~/components/ui/text';
 import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
 import { Info, Minus, Plus } from 'lucide-react-native';
 import { format } from 'date-fns';
-import { MonthlyPayment, MONTHS } from '~/backend/src/utils/types';
-
-
+import { MonthlyPayment, MONTHS } from '~/lib/utils';
 
 const getStatusDisplay = (status: string, debt?: number, advance?: number) => {
-  return {
-    'Paid': <Text className="bg-green-600 text-primary-foreground p-1 rounded-lg px-2 text-sm">PAID</Text>,
-    'Partially Paid': (
-      <View className="items-end">
-        <Text className="bg-yellow-600 text-primary-foreground p-1 rounded-lg px-2 text-sm">PARTIAL</Text>
-        {debt && debt > 0 && (
-          <View className="flex-row items-center mt-1">
-            <Minus size={12} className="text-destructive" />
-            <Text className="text-destructive text-sm">₹ {debt}</Text>
-          </View>
-        )}
-      </View>
-    ),
-    'Advance Paid': (
-      <View className="items-end">
-        <Text className="bg-green-600 text-primary-foreground p-1 rounded-lg px-2 text-sm">PAID</Text>
-        {advance && advance > 0 && (
-          <View className="flex-row items-center mt-1">
-            <Plus size={12} color="#38a169" />
-            <Text className="text-green-600 text-sm">₹ {advance}</Text>
-          </View>
-        )}
-      </View>
-    ),
-  }[status] || <Text className="bg-red-600 text-primary-foreground p-1 rounded-lg px-2 text-sm">UNPAID</Text>;
+  return (
+    {
+      Paid: (
+        <Text className="bg-green-600 text-primary-foreground p-1 rounded-lg px-2 text-sm">
+          PAID
+        </Text>
+      ),
+      'Partially Paid': (
+        <View className="items-end">
+          <Text className="bg-yellow-600 text-primary-foreground p-1 rounded-lg px-2 text-sm">
+            PARTIAL
+          </Text>
+          {debt && debt > 0 && (
+            <View className="flex-row items-center mt-1">
+              <Minus size={12} className="text-destructive" />
+              <Text className="text-destructive text-sm">₹ {debt}</Text>
+            </View>
+          )}
+        </View>
+      ),
+      'Advance Paid': (
+        <View className="items-end">
+          <Text className="bg-green-600 text-primary-foreground p-1 rounded-lg px-2 text-sm">
+            PAID
+          </Text>
+          {advance && advance > 0 && (
+            <View className="flex-row items-center mt-1">
+              <Plus size={12} color="#38a169" />
+              <Text className="text-green-600 text-sm">₹ {advance}</Text>
+            </View>
+          )}
+        </View>
+      ),
+    }[status] || (
+      <Text className="bg-red-600 text-primary-foreground p-1 rounded-lg px-2 text-sm">UNPAID</Text>
+    )
+  );
 };
 
 const MonthlyCard = ({ payment }: { payment: MonthlyPayment }) => {

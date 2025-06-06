@@ -1,4 +1,11 @@
-import { RefreshControl, ScrollView, View, Platform, Pressable, ActivityIndicator } from 'react-native';
+import {
+  RefreshControl,
+  ScrollView,
+  View,
+  Platform,
+  Pressable,
+  ActivityIndicator,
+} from 'react-native';
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Text } from '~/components/ui/text';
 import AllTransactionsCard from '~/components/AllTransactionsCard';
@@ -19,13 +26,11 @@ import { Muted } from '~/components/ui/typography';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '~/lib/api';
 import { useToast } from '~/components/ui/toast';
-import { ApiResponse, MONTHS, Transaction } from '~/backend/src/utils/types';
-
-
+import { ApiResponse, MONTHS, Transaction } from '~/lib/utils';
 
 const HistoryScreen = () => {
   const PAYMENT_MODES = ['All', 'UPI', 'Cash'];
-  
+
   const currentYear = new Date().getFullYear();
   const [selectedYear, setSelectedYear] = useState(currentYear);
   const [selectedViewType, setSelectedViewType] = useState<'Monthly' | 'Yearly'>('Monthly');
@@ -42,7 +47,14 @@ const HistoryScreen = () => {
     isLoading,
     refetch,
   } = useQuery<ApiResponse>({
-    queryKey: ['transactions', searchQuery, paymentMode, selectedYear, selectedMonth, selectedViewType] as const,
+    queryKey: [
+      'transactions',
+      searchQuery,
+      paymentMode,
+      selectedYear,
+      selectedMonth,
+      selectedViewType,
+    ] as const,
     queryFn: async ({ queryKey }): Promise<ApiResponse> => {
       const response = await api.get<ApiResponse>('api/bills/transactions');
       if (!response.status) {
@@ -76,27 +88,32 @@ const HistoryScreen = () => {
     },
   });
 
-
-  const renderTransaction = useCallback((transaction: Transaction) => (
-    <AllTransactionsCard
-      key={transaction.id}
-      name={transaction.customer.name}
-      date={new Date(transaction.months[0].paymentDate).toLocaleDateString()}
-      amount={transaction.months[0].amount}
-      paymentMethod={transaction.months[0].paidVia}
-      onDelete={() => deleteMutation.mutate(transaction.id)}
-    />
-  ), [deleteMutation]);
+  const renderTransaction = useCallback(
+    (transaction: Transaction) => (
+      <AllTransactionsCard
+        key={transaction.id}
+        name={transaction.customer.name}
+        date={new Date(transaction.months[0].paymentDate).toLocaleDateString()}
+        amount={transaction.months[0].amount}
+        paymentMethod={transaction.months[0].paidVia}
+        onDelete={() => deleteMutation.mutate(transaction.id)}
+      />
+    ),
+    [deleteMutation]
+  );
 
   const filteredTransactions = useMemo(() => {
     if (!response?.data) return [];
-    
+
     return response.data.filter((transaction: Transaction) => {
-      const matchesSearch = transaction.customer.name.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesPaymentMode = paymentMode === 'All' || transaction.months.some(m => m.paidVia === paymentMode);
+      const matchesSearch = transaction.customer.name
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase());
+      const matchesPaymentMode =
+        paymentMode === 'All' || transaction.months.some((m) => m.paidVia === paymentMode);
       const matchesYear = transaction.year === selectedYear;
-      const matchesMonth = selectedViewType === 'Yearly' || 
-        transaction.months.some(m => m.month === selectedMonth);
+      const matchesMonth =
+        selectedViewType === 'Yearly' || transaction.months.some((m) => m.month === selectedMonth);
 
       return matchesSearch && matchesPaymentMode && matchesYear && matchesMonth;
     });
@@ -122,16 +139,16 @@ const HistoryScreen = () => {
         <View className="flex-0 w-28">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button 
-                style={{height:54}}
-                variant="outline" 
+              <Button
+                style={{ height: 54 }}
+                variant="outline"
                 className="w-full justify-between flex-row"
               >
                 <Text className="text-foreground">{paymentMode}</Text>
                 <ChevronDown size={18} className="text-foreground" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent 
+            <DropdownMenuContent
               align="end"
               insets={{ left: 12, right: 12 }}
               className="w-64 native:w-72 bg-background"
@@ -140,8 +157,8 @@ const HistoryScreen = () => {
               <DropdownMenuSeparator />
               <DropdownMenuGroup className="gap-1">
                 {PAYMENT_MODES.map((mode) => (
-                  <DropdownMenuItem 
-                    key={mode} 
+                  <DropdownMenuItem
+                    key={mode}
                     onPress={() => setPaymentMode(mode)}
                     className={cn(
                       'flex-col items-start gap-1',
@@ -162,15 +179,12 @@ const HistoryScreen = () => {
         <View className="flex-1">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button 
-                variant="outline" 
-                className="w-full justify-between flex-row"
-              >
+              <Button variant="outline" className="w-full justify-between flex-row">
                 <Text className="text-foreground">{selectedViewType}</Text>
                 <ChevronDown size={18} className="text-foreground" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent 
+            <DropdownMenuContent
               align="end"
               insets={{ left: 12, right: 12 }}
               className="w-64 native:w-72 bg-background"
@@ -200,15 +214,12 @@ const HistoryScreen = () => {
           <View className="flex-1">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button 
-                  variant="outline" 
-                  className="w-full justify-between flex-row"
-                >
+                <Button variant="outline" className="w-full justify-between flex-row">
                   <Text className="text-foreground">{MONTHS[selectedMonth - 1]}</Text>
                   <ChevronDown size={18} className="text-foreground" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent 
+              <DropdownMenuContent
                 align="end"
                 insets={{ left: 12, right: 12 }}
                 className="w-64 native:w-72 bg-background"
@@ -242,7 +253,7 @@ const HistoryScreen = () => {
                 <ChevronDown size={18} className="text-foreground" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent 
+            <DropdownMenuContent
               align="end"
               insets={{ left: 12, right: 12 }}
               className="w-64 native:w-72 bg-background"
@@ -272,15 +283,11 @@ const HistoryScreen = () => {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 100 }}
         scrollEventThrottle={16}
-        refreshControl={
-          <RefreshControl refreshing={isLoading} onRefresh={() => refetch()} />
-        }
+        refreshControl={<RefreshControl refreshing={isLoading} onRefresh={() => refetch()} />}
       >
-        {filteredTransactions.length > 0 ? (
-          filteredTransactions.map(renderTransaction)
-        ) : (
-          renderEmptyState()
-        )}
+        {filteredTransactions.length > 0
+          ? filteredTransactions.map(renderTransaction)
+          : renderEmptyState()}
       </ScrollView>
     </View>
   );

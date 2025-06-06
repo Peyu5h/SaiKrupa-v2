@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { CustomerDetailsResponse } from '~/backend/src/utils/types';
+import { CustomerDetailsResponse } from '~/lib/utils';
 import api from '~/lib/api';
 import { useToast } from '~/components/ui/toast';
 
@@ -10,7 +10,7 @@ export function useCustomerDetails(id: string | null) {
     queryKey: ['customerDetails', id],
     queryFn: async () => {
       if (!id) return null;
-      
+
       const response = await api.get<CustomerDetailsResponse>(`api/customer/${id}`);
       if (!response.status) {
         toast({
@@ -26,5 +26,3 @@ export function useCustomerDetails(id: string | null) {
     staleTime: 30000,
   });
 }
-
-

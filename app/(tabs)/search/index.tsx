@@ -18,9 +18,8 @@ import { Input } from '~/components/ui/input';
 import { cn, useThemeColors } from '~/lib/utils';
 import { Muted } from '~/components/ui/typography';
 import { ChevronDown, UserX } from 'lucide-react-native';
-import { Customer } from '~/backend/src/utils/types';
+import { Customer } from '~/lib/utils';
 import CustomerCard from '~/components/CustomerCard';
-
 
 export default function SearchScreen() {
   const { getColor } = useThemeColors();

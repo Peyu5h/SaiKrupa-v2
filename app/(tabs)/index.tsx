@@ -1,5 +1,13 @@
 import * as React from 'react';
-import { Alert, Platform, RefreshControl, ScrollView, View, ActivityIndicator, FlatList } from 'react-native';
+import {
+  Alert,
+  Platform,
+  RefreshControl,
+  ScrollView,
+  View,
+  ActivityIndicator,
+  FlatList,
+} from 'react-native';
 
 import { Button } from '~/components/ui/button';
 
@@ -22,7 +30,7 @@ import { cn, useThemeColors } from '~/lib/utils';
 import { Muted } from '~/components/ui/typography';
 import { ChevronDown, UserX } from 'lucide-react-native';
 import CustomerCard from '~/components/CustomerCard';
-import { Customer, Payment } from '~/backend/src/utils/types';
+import { Customer, Payment } from '~/lib/utils';
 
 interface ApiResponse {
   status: boolean;
@@ -52,9 +60,13 @@ export default function Screen() {
   const [name, setName] = React.useState('');
   const [customerType, setCustomerType] = React.useState('All');
   const [selectedMonth, setSelectedMonth] = React.useState(new Date().getMonth());
-  const [selectedYear] = React.useState(new Date().getFullYear()); 
+  const [selectedYear] = React.useState(new Date().getFullYear());
 
-  const { data: customers = [], isLoading, refetch } = useQuery({
+  const {
+    data: customers = [],
+    isLoading,
+    refetch,
+  } = useQuery({
     queryKey: ['customers', name, customerType, selectedMonth, selectedYear],
     queryFn: async () => {
       try {
@@ -68,33 +80,35 @@ export default function Screen() {
           return [];
         }
 
-        return response.data?.filter((customer) => {
-          if (name && !customer.name.toLowerCase().includes(name.toLowerCase())) {
-            return false;
-          }
-
-          const yearPayments = customer.payments.filter(p => p.year === selectedYear);
-          const monthPayment = yearPayments
-            .flatMap(p => p.months)
-            .find(m => m.month === selectedMonth + 1);
-
-          const status = monthPayment?.status || 'Unpaid';
-
-          if (customerType !== 'All') {
-            switch (customerType) {
-              case 'Paid':
-                return status === 'Paid' || status === 'Advance Paid';
-              case 'Unpaid':
-                return status === 'Unpaid';
-              case 'Partial':
-                return status === 'Partially Paid';
-              default:
-                return true;
+        return (
+          response.data?.filter((customer) => {
+            if (name && !customer.name.toLowerCase().includes(name.toLowerCase())) {
+              return false;
             }
-          }
 
-          return true;
-        }) || [];
+            const yearPayments = customer.payments.filter((p) => p.year === selectedYear);
+            const monthPayment = yearPayments
+              .flatMap((p) => p.months)
+              .find((m) => m.month === selectedMonth + 1);
+
+            const status = monthPayment?.status || 'Unpaid';
+
+            if (customerType !== 'All') {
+              switch (customerType) {
+                case 'Paid':
+                  return status === 'Paid' || status === 'Advance Paid';
+                case 'Unpaid':
+                  return status === 'Unpaid';
+                case 'Partial':
+                  return status === 'Partially Paid';
+                default:
+                  return true;
+              }
+            }
+
+            return true;
+          }) || []
+        );
       } catch (error) {
         toast({
           title: 'Error',
@@ -156,7 +170,7 @@ export default function Screen() {
             <DropdownMenuTrigger asChild>
               <Button
                 variant="outline"
-                style={{height:54}}
+                style={{ height: 54 }}
                 size={Platform.OS === 'web' ? 'sm' : 'default'}
                 className="flex-row items-center justify-between"
               >
@@ -262,13 +276,13 @@ export default function Screen() {
             data={customers}
             keyExtractor={(item) => item.id}
             renderItem={({ item }) => {
-              const yearPayments = (item.payments || []).filter(p => p.year === selectedYear);
+              const yearPayments = (item.payments || []).filter((p) => p.year === selectedYear);
               const monthPayment = yearPayments
-                .flatMap(p => p.months || [])
-                .find(m => m.month === selectedMonth + 1);
-              
-              const currentPayment = yearPayments.find(p => 
-                (p.months || []).some(m => m.month === selectedMonth + 1)
+                .flatMap((p) => p.months || [])
+                .find((m) => m.month === selectedMonth + 1);
+
+              const currentPayment = yearPayments.find((p) =>
+                (p.months || []).some((m) => m.month === selectedMonth + 1)
               );
 
               return (
@@ -277,7 +291,11 @@ export default function Screen() {
                   name={item.name}
                   address={item.address}
                   stb={item.customerId}
-                  date={monthPayment?.paymentDate ? new Date(monthPayment.paymentDate).toLocaleDateString() : ""}
+                  date={
+                    monthPayment?.paymentDate
+                      ? new Date(monthPayment.paymentDate).toLocaleDateString()
+                      : ''
+                  }
                   amount={monthPayment?.amount || 0}
                   status={monthPayment?.status || 'Unpaid'}
                   debt={currentPayment?.totalDebt || monthPayment?.debt || 0}
@@ -286,9 +304,7 @@ export default function Screen() {
                 />
               );
             }}
-            refreshControl={
-              <RefreshControl refreshing={isLoading} onRefresh={() => refetch()} />
-            }
+            refreshControl={<RefreshControl refreshing={isLoading} onRefresh={() => refetch()} />}
             contentContainerStyle={{ paddingBottom: 100 }}
           />
         )}
